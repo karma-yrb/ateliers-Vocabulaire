@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guide — Atelier Vocabulaire</title>
+  <style>
+    :root {
+      --bg:      #f2efe9;
+      --panel:   #ffffff;
+      --ink:     #1a2332;
+      --muted:   #5a6475;
+      --line:    #ddd9d1;
+      --teal:    #1a6b7a;
+      --teal-lt: #e6f3f5;
+      --amber:   #b85c2a;
+      --amber-lt:#fdf0e6;
+      --ok:      #276843;
+      --ok-lt:   #e6f5ec;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    a { color: var(--teal); }
+
+    /* Layout */
+    .page {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* Header */
+    .doc-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .doc-header .badge {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .doc-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .doc-header p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    /* Table of contents */
+    .toc {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    .toc h2 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 10px; }
+    .toc ol { padding-left: 18px; }
+    .toc li { margin-bottom: 5px; font-size: 0.95rem; }
+
+    /* Sections */
+    .section {
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--line);
+    }
+    .section h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 20px 0 8px;
+      color: var(--ink);
+    }
+    .section p { margin-bottom: 10px; font-size: 0.95rem; }
+    .section p:last-child { margin-bottom: 0; }
+    .section ul, .section ol {
+      padding-left: 20px;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+    .section li { margin-bottom: 5px; }
+
+    /* Level badges */
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .level-badge.alpha    { background: var(--amber-lt); color: var(--amber); border: 1.5px solid var(--amber); }
+    .level-badge.allophone { background: var(--teal-lt);  color: var(--teal);  border: 1.5px solid var(--teal); }
+
+    /* Two-column level grid */
+    .level-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .level-block {
+      border-radius: 12px;
+      padding: 18px;
+      font-size: 0.9rem;
+    }
+    .level-block.alpha    { background: var(--amber-lt); border: 1.5px solid var(--amber); }
+    .level-block.allophone { background: var(--teal-lt);  border: 1.5px solid var(--teal); }
+    .level-block strong { display: block; margin-bottom: 8px; font-size: 0.95rem; }
+    .level-block ul { padding-left: 16px; }
+    .level-block li { margin-bottom: 4px; }
+
+    /* Mode table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin: 12px 0;
+    }
+    th {
+      background: var(--bg);
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--muted);
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 2px solid var(--line);
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* Tips box */
+    .tip {
+      background: var(--ok-lt);
+      border-left: 4px solid var(--ok);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 0.92rem;
+    }
+    .tip strong { color: var(--ok); }
+
+    .warn {
+      background: var(--amber-lt);
+      border-left: 4px solid var(--amber);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 0.92rem;
+    }
+
+    /* Keyboard key */
+    kbd {
+      display: inline-block;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 1px 7px;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      .level-grid { grid-template-columns: 1fr; }
+      .section { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="badge">Documentation formateur·trice</div>
+    <h1>Atelier Vocabulaire</h1>
+    <p>Guide d'utilisation — fichier <code>vocabulaire-atelier.html</code></p>
+  </div>
+
+  <!-- Table of contents -->
+  <div class="toc">
+    <h2>Sommaire</h2>
+    <ol>
+      <li><a href="#presentation">Présentation de l'application</a></li>
+      <li><a href="#niveaux">Les deux parcours</a></li>
+      <li><a href="#parcours-alpha">Parcours « Je découvre les mots »</a></li>
+      <li><a href="#parcours-allo">Parcours « Je lis et j'écris »</a></li>
+      <li><a href="#utilisation">Conseils d'utilisation en atelier</a></li>
+      <li><a href="#vocabulaire">Liste du vocabulaire</a></li>
+      <li><a href="#technique">Informations techniques</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. Présentation -->
+  <div class="section" id="presentation">
+    <h2>📋 Présentation de l'application</h2>
+    <p>
+      <strong>Atelier Vocabulaire</strong> est une application web autonome (un seul fichier HTML,
+      sans installation, sans connexion internet requise) destinée à l'apprentissage du vocabulaire
+      français en contexte d'atelier sociolinguistique (ASL).
+    </p>
+    <p>
+      Elle propose deux parcours adaptés à des profils d'apprenants différents, accessibles depuis
+      un ordinateur, une tablette ou un grand écran.
+    </p>
+    <div class="tip">
+      <strong>Avantage clé :</strong> aucune connexion internet n'est nécessaire.
+      L'application fonctionne entièrement dans le navigateur, sur n'importe quel appareil.
+    </div>
+  </div>
+
+  <!-- 2. Les deux niveaux -->
+  <div class="section" id="niveaux">
+    <h2>🎯 Les deux parcours</h2>
+    <p>
+      À l'ouverture, l'apprenant·e choisit son parcours. Les intitulés sont volontairement
+      formulés en langage simple, sans jargon pédagogique.
+    </p>
+
+    <div class="level-grid">
+      <div class="level-block alpha">
+        <strong>🌱 Je découvre les mots</strong>
+        <ul>
+          <li>Public visé : personnes peu ou pas scolarisées dans leur pays d'origine (niveau dit « alpha »)</li>
+          <li>Découverte du lien image → mot écrit</li>
+          <li>Pas de saisie au clavier requise</li>
+          <li>Interface très épurée, grands éléments</li>
+        </ul>
+      </div>
+      <div class="level-block allophone">
+        <strong>📖 Je lis et j'écris</strong>
+        <ul>
+          <li>Public visé : personnes ayant une scolarisation dans leur langue d'origine (public allophone)</li>
+          <li>Apprentissage du vocabulaire avec articles</li>
+          <li>Saisie au clavier, QCM, anagrammes, lecture</li>
+          <li>Statistiques et minuteur de session</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn">
+      <strong>Attention :</strong> ces deux parcours sont indépendants. L'apprenant·e peut
+      passer de l'un à l'autre à tout moment via le bouton « Changer de parcours ».
+    </div>
+  </div>
+
+  <!-- 3. Parcours Alpha -->
+  <div class="section" id="parcours-alpha">
+    <h2><span class="level-badge alpha">🌱 Je découvre les mots</span></h2>
+
+    <h3>Objectif pédagogique</h3>
+    <p>
+      Associer une image à son mot écrit en français. L'apprenant·e n'a pas besoin de
+      connaître le clavier. Tout se fait avec la souris (ou le doigt sur tablette).
+    </p>
+
+    <h3>Mode « Construire le mot »</h3>
+    <p>
+      Un emoji s'affiche. En dessous, des tuiles de lettres mélangées sont proposées.
+      L'apprenant·e clique les lettres dans le bon ordre pour former le mot.
+    </p>
+    <ul>
+      <li>Cliquer une lettre l'ajoute au mot en cours de construction</li>
+      <li>Cliquer une lettre déjà placée la retire</li>
+      <li>Quand le mot est complet, la validation est automatique</li>
+      <li>En cas d'erreur : les lettres se réinitialisent automatiquement après un bref délai</li>
+      <li>Le bouton <strong>Réinitialiser</strong> permet de tout effacer à la demande</li>
+    </ul>
+
+    <h3>Mode « Lire seulement »</h3>
+    <p>
+      Le mot s'affiche en gros caractères sous l'emoji. Idéal pour la lecture à voix haute
+      ou la phase de découverte avant l'exercice. Navigation libre avec les boutons
+      Précédent / Mot suivant.
+    </p>
+
+    <h3>Progression</h3>
+    <p>
+      22 mots répartis en 4 catégories (Corps, Nourriture, Maison, Vie quotidienne).
+      L'ordre est aléatoire à chaque nouvelle session.
+      Un bilan en pourcentage s'affiche à la fin de la série.
+    </p>
+
+    <div class="tip">
+      <strong>Conseil formateur·trice :</strong> commencer par le mode « Lire seulement » pour
+      une première prise de contact avec les mots, puis basculer en mode « Construire » pour
+      l'exercice actif.
+    </div>
+  </div>
+
+  <!-- 4. Parcours Allophone -->
+  <div class="section" id="parcours-allo">
+    <h2><span class="level-badge allophone">📖 Je lis et j'écris</span></h2>
+
+    <h3>Objectif pédagogique</h3>
+    <p>
+      Enrichir le vocabulaire français courant, mémoriser les articles (un, une, du…)
+      et s'entraîner à l'orthographe en contexte visuel.
+    </p>
+
+    <h3>Les 4 modes d'exercice</h3>
+    <table>
+      <tr>
+        <th>Mode</th>
+        <th>Description</th>
+        <th>Compétence travaillée</th>
+      </tr>
+      <tr>
+        <td>✏️ <strong>Écrire</strong></td>
+        <td>Taper le mot correspondant à l'image dans un champ de saisie. L'article est accepté mais pas obligatoire.</td>
+        <td>Orthographe, mémorisation</td>
+      </tr>
+      <tr>
+        <td>🔘 <strong>QCM</strong></td>
+        <td>Choisir parmi 4 propositions. Les distracteurs sont tirés au sort dans tout le vocabulaire.</td>
+        <td>Reconnaissance, discrimination lexicale</td>
+      </tr>
+      <tr>
+        <td>🔤 <strong>Lettres</strong></td>
+        <td>Remettre les lettres mélangées dans le bon ordre en cliquant les tuiles.</td>
+        <td>Conscience de la forme orthographique</td>
+      </tr>
+      <tr>
+        <td>👁 <strong>Lecture</strong></td>
+        <td>Affichage libre du mot avec l'image. Navigation avec les flèches clavier.</td>
+        <td>Lecture, mémorisation passive</td>
+      </tr>
+    </table>
+
+    <h3>Minuteur de session</h3>
+    <p>
+      Un chronomètre décompteur est disponible dans la barre latérale : <strong>30 min</strong>
+      ou <strong>60 min</strong>. Il s'arrête automatiquement à zéro. Il peut être arrêté
+      manuellement avec le bouton Stop.
+    </p>
+
+    <h3>Filtre par catégories</h3>
+    <p>
+      Il est possible de sélectionner une ou plusieurs catégories de mots pour cibler
+      le travail sur un thème particulier (ex. : uniquement « Corps » et « Maison »).
+      Au moins une catégorie doit rester active.
+    </p>
+
+    <h3>Statistiques</h3>
+    <p>La barre latérale affiche en temps réel :</p>
+    <ul>
+      <li><strong>Correct</strong> : nombre de bonnes réponses</li>
+      <li><strong>Erreurs</strong> : nombre de mauvaises réponses</li>
+      <li><strong>Tentatives</strong> : total de validations</li>
+      <li><strong>Réussite</strong> : pourcentage de bonnes réponses sur les tentatives</li>
+    </ul>
+
+    <h3>Raccourcis clavier</h3>
+    <ul>
+      <li><kbd>Entrée</kbd> — Valider la réponse (mode Écrire)</li>
+      <li><kbd>→</kbd> — Mot suivant</li>
+      <li><kbd>←</kbd> — Mot précédent</li>
+    </ul>
+
+    <div class="tip">
+      <strong>Validation souple :</strong> en mode Écrire, la réponse est acceptée avec
+      ou sans article. Les accents ne sont pas pénalisés (« elevé » = « élevé »).
+    </div>
+  </div>
+
+  <!-- 5. Conseils d'utilisation -->
+  <div class="section" id="utilisation">
+    <h2>💡 Conseils d'utilisation en atelier</h2>
+
+    <h3>Déroulement type d'une séance (60 min)</h3>
+    <ol>
+      <li><strong>Découverte (10 min)</strong> — Mode « Lire seulement » ou « Lecture » : parcourir
+        les mots d'une catégorie à voix haute avec la formatrice.</li>
+      <li><strong>Exercice actif (30–40 min)</strong> — Mode « Construire » (public alpha) ou
+        « Écrire » / « QCM » (public allophone).</li>
+      <li><strong>Consolidation (10 min)</strong> — Mode « Lettres » pour travailler la forme
+        des mots sans support écrit visible.</li>
+      <li><strong>Bilan (5 min)</strong> — Lire les statistiques, commenter les erreurs,
+        identifier les mots à revoir.</li>
+    </ol>
+
+    <h3>Conseils spécifiques public alpha</h3>
+    <ul>
+      <li>Verbaliser chaque lettre à voix haute au moment du clic.</li>
+      <li>Ne pas corriger l'absence d'accents dans un premier temps.</li>
+      <li>Privilégier les catégories « Corps » et « Maison » en début de parcours.</li>
+      <li>Laisser l'apprenant·e utiliser la souris de façon autonome.</li>
+    </ul>
+
+    <h3>Conseils spécifiques public allophone</h3>
+    <ul>
+      <li>Encourager l'écriture de l'article pour travailler le genre grammatical.</li>
+      <li>Utiliser le filtre de catégories pour centrer la séance sur un thème du cours.</li>
+      <li>Le mode QCM est idéal en début de séance pour réactiver le vocabulaire vu la semaine précédente.</li>
+      <li>Le chronomètre peut être affiché pour motiver la régularité sans créer de pression.</li>
+    </ul>
+
+    <div class="tip">
+      <strong>En groupe :</strong> projeter l'application sur un grand écran et faire
+      répondre les apprenants à tour de rôle. Désactiver le minuteur dans ce cas.
+    </div>
+  </div>
+
+  <!-- 6. Vocabulaire -->
+  <div class="section" id="vocabulaire">
+    <h2>📚 Liste du vocabulaire</h2>
+
+    <h3><span class="level-badge alpha">🌱 Je découvre</span> — 22 mots (sans article)</h3>
+    <table>
+      <tr><th>Catégorie</th><th>Mots</th></tr>
+      <tr><td>Corps (7)</td><td>œil, nez, bouche, oreille, main, pied, dent</td></tr>
+      <tr><td>Nourriture (8)</td><td>pomme, pain, eau, lait, riz, citron, œuf, sel</td></tr>
+      <tr><td>Maison (5)</td><td>lit, porte, lampe, chaise, clé</td></tr>
+      <tr><td>Vie quotidienne (2)</td><td>bus, école</td></tr>
+    </table>
+
+    <h3><span class="level-badge allophone">📖 Je lis et j'écris</span> — 56 mots (avec article)</h3>
+    <table>
+      <tr><th>Catégorie</th><th>Nombre</th><th>Exemples</th></tr>
+      <tr><td>Fruits</td><td>9</td><td>une pomme, une banane, un citron…</td></tr>
+      <tr><td>Légumes</td><td>7</td><td>une carotte, une tomate, de la salade…</td></tr>
+      <tr><td>Animaux</td><td>8</td><td>un chien, un chat, un éléphant…</td></tr>
+      <tr><td>Maison</td><td>10</td><td>une chaise, une fenêtre, une douche…</td></tr>
+      <tr><td>Corps</td><td>8</td><td>un œil, une oreille, un bras…</td></tr>
+      <tr><td>Vie quotidienne</td><td>10</td><td>un bus, un hôpital, un téléphone…</td></tr>
+      <tr><td>Vêtements</td><td>7</td><td>un t-shirt, une robe, un manteau…</td></tr>
+    </table>
+  </div>
+
+  <!-- 7. Informations techniques -->
+  <div class="section" id="technique">
+    <h2>⚙️ Informations techniques</h2>
+
+    <h3>Fichiers</h3>
+    <table>
+      <tr><th>Fichier</th><th>Description</th></tr>
+      <tr><td><code>vocabulaire-atelier.html</code></td><td>Application principale — à ouvrir avec un navigateur web</td></tr>
+      <tr><td><code>vocabulaire-quotidien.html</code></td><td>Version antérieure sobre (session 60 min, recopie de mots)</td></tr>
+      <tr><td><code>vocabulaire.html</code></td><td>Version antérieure colorée (3 modes, public enfant)</td></tr>
+      <tr><td><code>docs/guide-vocabulaire-atelier.html</code></td><td>Ce document</td></tr>
+    </table>
+
+    <h3>Compatibilité</h3>
+    <ul>
+      <li>Navigateurs récents : Chrome, Firefox, Edge, Safari (2021 et après)</li>
+      <li>Aucune installation, aucune connexion internet requise</li>
+      <li>Responsive : fonctionne sur tablette et ordinateur</li>
+      <li>Pas d'accessibilité pour les lecteurs d'écran (pas l'usage visé)</li>
+    </ul>
+
+    <h3>Modification du vocabulaire</h3>
+    <p>
+      Les listes de mots se trouvent dans la balise <code>&lt;script&gt;</code> du fichier HTML,
+      dans les tableaux <code>VOCAB_ALPHA</code> et <code>VOCAB_ALLOPHONE</code>.
+      Chaque entrée suit ce format :
+    </p>
+    <pre style="background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:0.85rem;margin:8px 0;overflow-x:auto;">
+{ emoji: "🍎", word: "une pomme", cat: "Fruits" }</pre>
+    <p>
+      Pour le parcours alpha, le champ <code>word</code> ne contient pas d'article.
+      Pour le parcours allophone, il inclut l'article.
+    </p>
+
+    <div class="warn">
+      <strong>Sauvegarde :</strong> l'application ne sauvegarde aucune donnée entre les sessions.
+      Les statistiques sont remises à zéro à chaque ouverture du fichier.
+    </div>
+  </div>
+
+  <footer>
+    Atelier Vocabulaire · Documentation formateur·trice · Avril 2026<br>
+    Ateliers numériques — ASL
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocabulaire Informatique</title>
+  <link rel="stylesheet" href="vocabulaire_v2.html">
+</head>
+<body>
+<!-- ═══════════════════════════════════════════════════════════
+     MODULE INFORMATIQUE & NUMÉRIQUE
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+"use strict";
+
+const VOCAB_INFO = [
+  // Informatique & Numérique
+  { emoji:"🖱️", word:"une souris", cat:"Informatique" },
+  { emoji:"💻", word:"un ordinateur", cat:"Informatique" },
+  { emoji:"⌨️", word:"un clavier", cat:"Informatique" },
+  { emoji:"🖥️", word:"un écran", cat:"Informatique" },
+  { emoji:"🖨️", word:"une imprimante", cat:"Informatique" },
+  { emoji:"📱", word:"un smartphone", cat:"Informatique" },
+  { emoji:"📶", word:"le wifi", cat:"Informatique" },
+  { emoji:"🌐", word:"internet", cat:"Informatique" },
+  { emoji:"🔌", word:"une prise", cat:"Informatique" },
+  { emoji:"🔋", word:"une batterie", cat:"Informatique" },
+  { emoji:"🗂️", word:"un dossier", cat:"Informatique" },
+  { emoji:"📁", word:"un fichier", cat:"Informatique" },
+  { emoji:"🔑", word:"un mot de passe", cat:"Informatique" },
+  { emoji:"🖲️", word:"un pavé tactile", cat:"Informatique" },
+  { emoji:"🧑‍💻", word:"un utilisateur", cat:"Informatique" },
+  { emoji:"🛜", word:"un réseau", cat:"Informatique" },
+  { emoji:"🧑‍🏫", word:"un formateur", cat:"Informatique" },
+  { emoji:"🗑️", word:"la corbeille", cat:"Informatique" },
+  { emoji:"🔒", word:"sécurité", cat:"Informatique" },
+  { emoji:"🕹️", word:"une manette", cat:"Informatique" }
+];
+
+// Exemple d'utilisation :
+// Afficher tous les mots du module Informatique
+console.log(VOCAB_INFO);
+</script>
+
+<h1>Vocabulaire : Informatique & Numérique</h1>
+<ul id="vocab-list"></ul>
+<script>
+// Affichage simple de la liste
+const ul = document.getElementById('vocab-list');
+VOCAB_INFO.forEach(item => {
+  const li = document.createElement('li');
+  li.textContent = `${item.emoji} ${item.word}`;
+  ul.appendChild(li);
+});
+</script>
+</body>
+</html>

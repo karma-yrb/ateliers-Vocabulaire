@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apprendre les mots</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #e0f4ff;
+    --yellow: #FFD93D;
+    --green: #6BCB77;
+    --red: #FF6B6B;
+    --blue: #4D96FF;
+    --purple: #845EC2;
+    --orange: #FF9671;
+    --card-bg: #ffffff;
+    --text: #2d2d2d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #e0f4ff 0%, #fff0e6 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 12px;
+    color: var(--text);
+  }
+
+  h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.4rem;
+    color: var(--purple);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 #ddd;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  /* Progress */
+  .progress-bar-wrap {
+    width: 100%;
+    max-width: 560px;
+    background: #dde8f5;
+    border-radius: 20px;
+    height: 14px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    border-radius: 20px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  /* Score */
+  .score-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .score-badge {
+    padding: 6px 18px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
+  .score-badge.good { background: #d4f7d9; color: #2b7a2b; }
+  .score-badge.bad  { background: #ffe0e0; color: #b03030; }
+
+  /* Card */
+  .card {
+    background: var(--card-bg);
+    border-radius: 28px;
+    box-shadow: 0 8px 32px rgba(100,100,150,0.13);
+    padding: 32px 28px 28px;
+    max-width: 560px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    transition: transform 0.15s;
+  }
+
+  .category-tag {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    background: var(--yellow);
+    color: #6a4800;
+    border-radius: 12px;
+    padding: 3px 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .emoji-img {
+    font-size: 6rem;
+    line-height: 1;
+    user-select: none;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
+    animation: bounceIn 0.4s cubic-bezier(.36,.07,.19,.97);
+  }
+
+  @keyframes bounceIn {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.1); }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
+  .word-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--purple);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .hint {
+    font-size: 0.9rem;
+    color: #aaa;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Input zone */
+  .input-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 14px 18px;
+    border: 3px solid #d0d8ef;
+    border-radius: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+    background: #f7faff;
+  }
+  input[type="text"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(77,150,255,0.15);
+    background: #fff;
+  }
+  input[type="text"].correct {
+    border-color: var(--green);
+    background: #edfff0;
+    color: #1e7a30;
+  }
+  input[type="text"].wrong {
+    border-color: var(--red);
+    background: #fff0f0;
+    color: #b03030;
+    animation: shake 0.35s;
+  }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-6px)}
+    40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)}
+    80%{transform:translateX(4px)}
+  }
+
+  button.check-btn {
+    padding: 14px 22px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  button.check-btn:hover { background: var(--purple); transform: scale(1.04); }
+  button.check-btn:active { transform: scale(0.97); }
+
+  /* Feedback */
+  .feedback {
+    font-size: 1.25rem;
+    font-weight: 800;
+    min-height: 28px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .feedback.correct { color: var(--green); }
+  .feedback.wrong   { color: var(--red); }
+
+  /* Navigation */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  button.nav-btn {
+    padding: 10px 24px;
+    border-radius: 14px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  button.nav-btn:hover { transform: scale(1.05); }
+  .btn-next { background: var(--green); color: #fff; }
+  .btn-prev { background: #e8e8e8; color: #555; }
+  .btn-shuffle { background: var(--orange); color: #fff; }
+
+  /* Completed */
+  .completed-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    padding: 20px;
+  }
+  .completed-screen.show { display: flex; }
+  .completed-screen .big-emoji { font-size: 5rem; }
+  .completed-screen h2 { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--purple); }
+  .completed-screen p { font-size: 1.05rem; color: #555; }
+  .btn-restart { background: var(--purple); color: #fff; padding: 14px 32px; border-radius: 20px; border: none; font-family: 'Fredoka One', cursive; font-size: 1.2rem; cursor: pointer; margin-top: 10px; }
+
+  /* Modes */
+  .mode-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .mode-btn {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 2.5px solid #ccc;
+    background: #fff;
+    color: #666;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .mode-btn.active {
+    border-color: var(--purple);
+    background: var(--purple);
+    color: #fff;
+  }
+
+  /* Letters helper */
+  .letters-helper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .letter-btn {
+    padding: 7px 11px;
+    border-radius: 10px;
+    border: 2px solid #d0d8ef;
+    background: #f0f4ff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    color: var(--purple);
+  }
+  .letter-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+  .word-chars {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
+  }
+  .char-box {
+    width: 42px;
+    height: 42px;
+    border-bottom: 3px solid #b0b8d8;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    color: var(--purple);
+    letter-spacing: 0;
+  }
+
+  footer { margin-top: 28px; font-size: 0.78rem; color: #bbb; }
+</style>
+</head>
+<body>
+
+<h1>🌟 J'apprends les mots !</h1>
+<p class="subtitle">Regarde l'image et écris le mot en français</p>
+
+<div class="mode-row">
+  <button class="mode-btn active" onclick="setMode('ecrire')">✏️ Écrire</button>
+  <button class="mode-btn" onclick="setMode('lettres')">🔤 Lettres mélangées</button>
+  <button class="mode-btn" onclick="setMode('voir')">👁️ Voir seulement</button>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar" id="progressBar" style="width:0%"></div>
+</div>
+<p class="progress-label" id="progressLabel">Mot 1 / 30</p>
+
+<div class="score-row">
+  <span class="score-badge good" id="scoreGood">✅ 0 correct</span>
+  <span class="score-badge bad"  id="scoreBad">❌ 0 erreur</span>
+</div>
+
+<div class="card" id="mainCard">
+  <span class="category-tag" id="catTag">—</span>
+  <div class="emoji-img" id="wordEmoji">🍎</div>
+  <div class="word-label" id="wordLabel" style="display:none">une pomme</div>
+
+  <!-- Mode écrire -->
+  <div id="modeEcrire" style="width:100%;display:flex;flex-direction:column;gap:14px;align-items:center">
+    <div class="input-row">
+      <input type="text" id="userInput" placeholder="Écris le mot ici…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <button class="check-btn" onclick="checkAnswer()">Vérifier ✔</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- Mode lettres mélangées -->
+  <div id="modeLettres" style="width:100%;display:none;flex-direction:column;gap:12px;align-items:center">
+    <div class="word-chars" id="wordChars"></div>
+    <div class="letters-helper" id="lettersHelper"></div>
+    <div class="feedback" id="feedbackL"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn btn-prev" onclick="prevWord()">⬅ Précédent</button>
+    <button class="nav-btn btn-shuffle" onclick="shuffle()">🔀 Mélanger</button>
+    <button class="nav-btn btn-next" onclick="nextWord()">Suivant ➡</button>
+  </div>
+</div>
+
+<!-- Completed -->
+<div class="card completed-screen" id="completedScreen">
+  <div class="big-emoji">🎉</div>
+  <h2>Bravo ! Tu as fini !</h2>
+  <p id="finalScore">Tu as eu 0 bonnes réponses !</p>
+  <button class="btn-restart" onclick="restart()">🔄 Recommencer</button>
+</div>
+
+<footer>Utilise le clavier et la souris · Bonne chance ! 🍀</footer>
+
+<script>
+const WORDS = [
+  // Fruits
+  { emoji:"🍎", word:"une pomme",    cat:"Fruits" },
+  { emoji:"🍌", word:"une banane",   cat:"Fruits" },
+  { emoji:"🍊", word:"une orange",   cat:"Fruits" },
+  { emoji:"🍓", word:"une fraise",   cat:"Fruits" },
+  { emoji:"🍇", word:"du raisin",    cat:"Fruits" },
+  { emoji:"🍋", word:"un citron",    cat:"Fruits" },
+  { emoji:"🍑", word:"une pêche",    cat:"Fruits" },
+  { emoji:"🍍", word:"un ananas",    cat:"Fruits" },
+
+  // Légumes
+  { emoji:"🥕", word:"une carotte",  cat:"Légumes" },
+  { emoji:"🍅", word:"une tomate",   cat:"Légumes" },
+  { emoji:"🥦", word:"du brocoli",   cat:"Légumes" },
+  { emoji:"🧅", word:"un oignon",    cat:"Légumes" },
+  { emoji:"🥔", word:"une pomme de terre", cat:"Légumes" },
+
+  // Animaux
+  { emoji:"🐶", word:"un chien",     cat:"Animaux" },
+  { emoji:"🐱", word:"un chat",      cat:"Animaux" },
+  { emoji:"🐦", word:"un oiseau",    cat:"Animaux" },
+  { emoji:"🐠", word:"un poisson",   cat:"Animaux" },
+  { emoji:"🐇", word:"un lapin",     cat:"Animaux" },
+  { emoji:"🐘", word:"un éléphant",  cat:"Animaux" },
+  { emoji:"🦁", word:"un lion",      cat:"Animaux" },
+
+  // Maison
+  { emoji:"🪑", word:"une chaise",   cat:"Maison" },
+  { emoji:"🛏️", word:"un lit",       cat:"Maison" },
+  { emoji:"🚪", word:"une porte",    cat:"Maison" },
+  { emoji:"🪟", word:"une fenêtre",  cat:"Maison" },
+  { emoji:"💡", word:"une lampe",    cat:"Maison" },
+  { emoji:"📺", word:"une télévision", cat:"Maison" },
+
+  // Corps
+  { emoji:"👁️", word:"un œil",       cat:"Corps" },
+  { emoji:"👂", word:"une oreille",  cat:"Corps" },
+  { emoji:"👃", word:"un nez",       cat:"Corps" },
+  { emoji:"🦷", word:"une dent",     cat:"Corps" },
+];
+
+let order = [], idx = 0, correct = 0, wrong = 0;
+let mode = 'ecrire';
+let scrambled = [], typed = [];
+let answered = false;
+
+function init() {
+  order = [...Array(WORDS.length).keys()];
+  idx = 0; correct = 0; wrong = 0;
+  updateScore();
+  loadWord();
+}
+
+function shuffle() {
+  for (let i = order.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [order[i],order[j]] = [order[j],order[i]];
+  }
+  idx = 0;
+  loadWord();
+}
+
+function loadWord() {
+  answered = false;
+  const w = WORDS[order[idx]];
+  document.getElementById('wordEmoji').textContent = w.emoji;
+  document.getElementById('wordLabel').style.display = 'none';
+  document.getElementById('catTag').textContent = w.cat;
+  updateProgress();
+
+  if (mode === 'ecrire') {
+    const inp = document.getElementById('userInput');
+    inp.value = '';
+    inp.className = '';
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+    inp.focus();
+  } else if (mode === 'lettres') {
+    setupScramble(w);
+  } else {
+    showWord(w);
+  }
+}
+
+function getCleanWord(w) {
+  // remove article, normalize
+  return w.word.replace(/^(un|une|du|de la|des|le|la|les)\s+/i,'').toLowerCase().trim();
+}
+
+function checkAnswer() {
+  if (answered) { nextWord(); return; }
+  const w = WORDS[order[idx]];
+  const inp = document.getElementById('userInput');
+  const val = inp.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const targets = [
+    w.word.toLowerCase(),
+    getCleanWord(w)
+  ].map(t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+
+  const ok = targets.some(t => val === t);
+  const fb = document.getElementById('feedback');
+  if (ok) {
+    inp.className = 'correct';
+    fb.textContent = '✅ Bravo ! ' + w.word;
+    fb.className = 'feedback correct';
+    correct++;
+  } else {
+    inp.className = 'wrong';
+    fb.textContent = '❌ C\'est : ' + w.word;
+    fb.className = 'feedback wrong';
+    wrong++;
+  }
+  document.getElementById('wordLabel').style.display = 'block';
+  updateScore();
+  answered = true;
+}
+
+function nextWord() {
+  if (idx < order.length-1) {
+    idx++;
+    loadWord();
+  } else {
+    showCompleted();
+  }
+}
+
+function prevWord() {
+  if (idx > 0) { idx--; loadWord(); }
+}
+
+function updateProgress() {
+  const pct = ((idx+1)/WORDS.length)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = `Mot ${idx+1} / ${WORDS.length}`;
+}
+
+function updateScore() {
+  document.getElementById('scoreGood').textContent = '✅ '+correct+' correct'+(correct>1?'s':'');
+  document.getElementById('scoreBad').textContent  = '❌ '+wrong+' erreur'+(wrong>1?'s':'');
+}
+
+function showCompleted() {
+  document.getElementById('mainCard').style.display = 'none';
+  const s = document.getElementById('completedScreen');
+  s.classList.add('show');
+  document.getElementById('finalScore').textContent =
+    `Tu as eu ${correct} bonne${correct>1?'s':''} réponse${correct>1?'s':''} sur ${WORDS.length} mots !`;
+}
+
+function restart() {
+  document.getElementById('mainCard').style.display = 'flex';
+  document.getElementById('completedScreen').classList.remove('show');
+  init();
+}
+
+// Mode management
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>{
+    b.classList.toggle('active', ['ecrire','lettres','voir'][i]===m);
+  });
+  document.getElementById('modeEcrire').style.display = m==='ecrire' ? 'flex' : 'none';
+  document.getElementById('modeLettres').style.display = m==='lettres' ? 'flex' : 'none';
+  loadWord();
+}
+
+// Scramble mode
+function setupScramble(w) {
+  const clean = getCleanWord(w);
+  const letters = clean.split('').filter(c=>c.trim());
+  scrambled = [...letters].sort(()=>Math.random()-0.5);
+  typed = new Array(letters.length).fill('');
+
+  renderChars();
+  renderLetters(scrambled.map((l,i)=>({l,i,used:false})));
+  document.getElementById('feedbackL').textContent = '';
+  document.getElementById('feedbackL').className = 'feedback';
+}
+
+let usedIndices = [];
+function renderChars() {
+  const w = WORDS[order[idx]];
+  const clean = getCleanWord(w);
+  const container = document.getElementById('wordChars');
+  container.innerHTML = '';
+  typed.forEach((c,i) => {
+    const box = document.createElement('div');
+    box.className = 'char-box';
+    box.textContent = c || '';
+    box.style.cursor = c ? 'pointer' : '';
+    if (c) box.onclick = () => removeChar(i);
+    container.appendChild(box);
+  });
+}
+
+function renderLetters(pool) {
+  const container = document.getElementById('lettersHelper');
+  container.innerHTML = '';
+  pool.forEach((item) => {
+    if (item.used) return;
+    const btn = document.createElement('button');
+    btn.className = 'letter-btn';
+    btn.textContent = item.l.toUpperCase();
+    btn.onclick = () => addLetter(item);
+    container.appendChild(btn);
+  });
+}
+
+let letterPool = [];
+function setupScramble2(w) {
+  const clean = getCleanWord(w);
+  const letters = clean.split('').filter(c => c.trim() && c !== ' ');
+  typed = new Array(letters.length).fill('');
+  letterPool = letters.map((l,i) => ({l, i, used:false}));
+  // shuffle letterPool
+  for (let i=letterPool.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [letterPool[i],letterPool[j]]=[letterPool[j],letterPool[i]];
+  }
+  usedIndices = [];
+  renderChars();
+  renderLetters(letterPool);
+  document.getElementById('feedbackL').textContent='';
+}
+
+// override setupScramble
+const _setupScramble = setupScramble;
+window.setupScramble = function(w) { setupScramble2(w); }
+
+function addLetter(item) {
+  if (answered) return;
+  const nextEmpty = typed.indexOf('');
+  if (nextEmpty === -1) return;
+  item.used = true;
+  typed[nextEmpty] = item.l;
+  usedIndices.push(item.i);
+  renderChars();
+  renderLetters(letterPool);
+  // auto check when full
+  if (!typed.includes('')) checkScramble();
+}
+
+function removeChar(i) {
+  if (answered) return;
+  const letter = typed[i];
+  typed[i] = '';
+  // find last used in pool matching this letter
+  const poolItem = letterPool.find(p => p.used && p.l === letter);
+  if (poolItem) poolItem.used = false;
+  renderChars();
+  renderLetters(letterPool);
+  document.getElementById('feedbackL').textContent='';
+}
+
+function checkScramble() {
+  const w = WORDS[order[idx]];
+  const clean = getCleanWord(w);
+  const answer = typed.join('');
+  const fb = document.getElementById('feedbackL');
+  const ok = answer.normalize('NFD').replace(/[\u0300-\u036f]/g,'') ===
+             clean.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if (ok) {
+    fb.textContent = '✅ Bravo ! ' + w.word;
+    fb.className = 'feedback correct';
+    correct++;
+  } else {
+    fb.textContent = '❌ C\'est : ' + w.word;
+    fb.className = 'feedback wrong';
+    wrong++;
+  }
+  document.getElementById('wordLabel').style.display = 'block';
+  updateScore();
+  answered = true;
+}
+
+function showWord(w) {
+  document.getElementById('wordLabel').style.display = 'block';
+  document.getElementById('wordLabel').textContent = w.word;
+}
+
+// Enter key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && mode === 'ecrire') checkAnswer();
+  if (e.key === 'ArrowRight') nextWord();
+  if (e.key === 'ArrowLeft') prevWord();
+});
+
+init();
+</script>
+</body>
+</html>

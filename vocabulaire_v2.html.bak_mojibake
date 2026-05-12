@@ -1,0 +1,1956 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier Vocabulaire</title>
+  <style>
+    :root {
+      --bg:          #f2efe9;
+      --panel:       #ffffff;
+      --ink:         #1a2332;
+      --muted:       #5a6475;
+      --line:        #ddd9d1;
+      --teal:        #1a6b7a;
+      --teal-lt:     #e6f3f5;
+      --amber:       #b85c2a;
+      --amber-lt:    #fdf0e6;
+      --ok:          #276843;
+      --ok-lt:       #e6f5ec;
+      --ko:          #b03030;
+      --ko-lt:       #fdeaea;
+      --shadow:      0 4px 24px rgba(0,0,0,0.09);
+      --radius:      18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--ink);
+    }
+
+    /* â”€â”€â”€ WELCOME â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    #screen-welcome {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      gap: 36px;
+    }
+
+    .welcome-title {
+      text-align: center;
+    }
+    .welcome-title h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .welcome-title p {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 1rem;
+    }
+
+    .level-cards {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .level-card {
+      background: var(--panel);
+      border-radius: 22px;
+      padding: 32px 28px 24px;
+      width: 290px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border: 2px solid transparent;
+      transition: transform 0.18s, box-shadow 0.18s;
+      cursor: default;
+    }
+    .level-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.13); }
+    .level-card.alpha    { border-color: var(--amber); }
+    .level-card.numerique { border-color: #3a6ea5; }
+    .level-card.allophone { border-color: var(--teal); }
+
+    .level-card .lc-icon { font-size: 2.6rem; }
+    .lc-level {
+      align-self: flex-start;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1.5px solid currentColor;
+      margin-top: -2px;
+    }
+    .level-card.alpha .lc-level {
+      color: var(--amber);
+      background: var(--amber-lt);
+    }
+    .level-card.numerique .lc-level {
+      color: #2f5a86;
+      background: #eaf1f8;
+    }
+    .level-card.allophone .lc-level {
+      color: var(--teal);
+      background: var(--teal-lt);
+    }
+    .level-card h2 { font-size: 1.3rem; font-weight: 800; }
+    .level-card.alpha    h2 { color: var(--amber); }
+    .level-card.numerique h2 { color: #3a6ea5; }
+    .level-card.allophone h2 { color: var(--teal); }
+
+    .level-card .lc-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .lc-features {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .lc-feat {
+      font-size: 0.84rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .lc-feat::before {
+      content: "âœ“";
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+    .level-card.alpha    .lc-feat::before { color: var(--amber); }
+    .level-card.numerique .lc-feat::before { color: #3a6ea5; }
+    .level-card.allophone .lc-feat::before { color: var(--teal); }
+
+    .lc-start {
+      display: block;
+      width: 100%;
+      margin-top: 6px;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.18s, transform 0.1s;
+    }
+    .lc-start:hover { opacity: 0.88; transform: scale(1.02); }
+    .level-card.alpha    .lc-start { background: var(--amber); }
+    .level-card.numerique .lc-start { background: #3a6ea5; }
+    .level-card.allophone .lc-start { background: var(--teal); }
+
+    /* â”€â”€â”€ SCREENS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* â”€â”€â”€ SHARED â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: none;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s;
+      font-weight: 600;
+    }
+    .back-btn:hover { background: var(--line); }
+
+    .progress-track {
+      background: var(--line);
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+    .alpha-fill    { background: linear-gradient(90deg, var(--amber), #d4804a); }
+    .allo-fill     { background: linear-gradient(90deg, var(--teal),  #22a0b6); }
+
+    .feedback-msg {
+      min-height: 30px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 10px;
+      padding: 6px 14px;
+      transition: all 0.18s;
+    }
+    .feedback-msg.ok { background: var(--ok-lt); color: var(--ok); }
+    .feedback-msg.ko { background: var(--ko-lt); color: var(--ko); }
+
+    /* Letter scramble shared */
+    .char-boxes {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-height: 58px;
+    }
+    .char-box {
+      width: 52px;
+      height: 56px;
+      border-radius: 10px;
+      border: 2px solid var(--line);
+      background: #f8f6f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      transition: all 0.13s;
+      user-select: none;
+    }
+    .char-box.empty  { border-style: dashed; color: transparent; }
+    .char-box.filled { cursor: pointer; border-color: currentColor; }
+    .char-box.space {
+      border-style: solid;
+      border-color: transparent;
+      background: transparent;
+      box-shadow: inset 0 -2px 0 var(--line);
+      cursor: default;
+    }
+
+    .letter-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .letter-tile {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      background: #fff;
+      color: var(--ink);
+      font-size: 1.3rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: all 0.12s;
+    }
+    .letter-tile:hover { transform: scale(1.1); }
+    .letter-tile.used  { opacity: 0.2; pointer-events: none; }
+
+    /* Completed overlay */
+    .completed-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+      padding: 36px 28px;
+      background: var(--panel);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .completed-panel.show { display: flex; }
+    .completed-panel .cp-emoji { font-size: 4.5rem; }
+    .completed-panel h2 { font-size: 1.6rem; font-weight: 800; }
+    .completed-panel .cp-pct {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .completed-panel .cp-sub { color: var(--muted); font-size: 0.95rem; }
+
+    .btn {
+      padding: 11px 22px;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover  { opacity: 0.87; transform: translateY(-1px); }
+    .btn:active { transform: scale(0.97); }
+    .btn-amber  { background: var(--amber); color: #fff; }
+    .btn-teal   { background: var(--teal);  color: #fff; }
+    .btn-ghost  { background: var(--line);  color: var(--ink); }
+
+    /* â”€â”€â”€ ALPHA SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    #screen-alpha.active { display: block; }
+
+    .alpha-wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 22px 16px 48px;
+    }
+
+    .alpha-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .alpha-counter {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--amber);
+      letter-spacing: 0.02em;
+    }
+
+    .alpha-modes {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .alpha-mode-btn {
+      padding: 9px 20px;
+      border-radius: 20px;
+      border: 2px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .alpha-mode-btn.active {
+      border-color: var(--amber);
+      background: var(--amber);
+      color: #fff;
+    }
+
+    .alpha-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 30px 24px 26px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      min-height: 440px;
+    }
+
+    .alpha-emoji {
+      font-size: 8rem;
+      line-height: 1;
+      min-height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.07));
+      animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .alpha-emoji.has-image { font-size: 0; line-height: 0; }
+    .alpha-emoji-img {
+      width: 132px;
+      height: 132px;
+      object-fit: contain;
+      display: block;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.55); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+
+    .cat-tag {
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: 0.2px;
+    }
+    .cat-tag.amber { background: var(--amber-lt); color: var(--amber); }
+    .cat-tag.teal  { background: var(--teal-lt);  color: var(--teal); }
+    .cat-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.3;
+      margin-top: -2px;
+    }
+    .cat-hint-prefix { font-weight: 600; }
+
+    .alpha-scramble-area,
+    .alpha-view-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Alpha char box color accent */
+    #alpha-char-boxes .char-box.filled {
+      color: var(--amber);
+      border-color: var(--amber);
+      background: var(--amber-lt);
+    }
+
+    /* Alpha letter tiles */
+    #alpha-letter-bank .letter-tile:hover {
+      border-color: var(--amber);
+      background: var(--amber-lt);
+      color: var(--amber);
+    }
+
+    .alpha-view-word {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--amber);
+      padding: 16px 28px;
+      background: var(--amber-lt);
+      border-radius: 14px;
+      border: 2px solid var(--amber);
+      letter-spacing: 0.05em;
+    }
+
+    .alpha-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* â”€â”€â”€ ALLOPHONE SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    #screen-allophone.active {
+      display: grid;
+      grid-template-columns: 272px 1fr;
+      min-height: 100vh;
+    }
+
+    .allo-sidebar {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--teal);
+      background: var(--teal-lt);
+      padding: 3px 10px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .s-section { display: flex; flex-direction: column; gap: 8px; }
+    .s-section-title {
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+    }
+
+    /* Timer */
+    .allo-timer-display {
+      text-align: center;
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+      background: var(--teal-lt);
+      border-radius: 12px;
+      padding: 12px 8px 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .allo-timer-btns { display: flex; gap: 6px; }
+    .timer-btn {
+      flex: 1;
+      padding: 7px 4px;
+      border-radius: 9px;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .timer-btn:hover { opacity: 0.83; }
+    .timer-btn.teal  { background: var(--teal);  color: #fff; }
+    .timer-btn.ghost { background: var(--line);  color: var(--ink); }
+
+    /* Stats */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+    .stat-box {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 9px 8px;
+      text-align: center;
+      border: 1px solid var(--line);
+    }
+    .stat-box .sv { font-size: 1.3rem; font-weight: 800; }
+    .stat-box .sl { font-size: 0.7rem; color: var(--muted); margin-top: 2px; font-weight: 600; }
+    .stat-box.ok .sv { color: var(--ok); }
+    .stat-box.ko .sv { color: var(--ko); }
+    .stat-box.nt .sv { color: var(--teal); }
+
+    /* Mode tabs */
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .mode-tab {
+      padding: 9px 4px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .mode-tab:hover { border-color: var(--teal); color: var(--teal); }
+    .mode-tab.active { border-color: var(--teal); background: var(--teal); color: #fff; }
+
+    /* Category filter */
+    .cat-filter { display: flex; flex-direction: column; gap: 5px; }
+    .cat-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: var(--panel);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .cat-pill:hover { border-color: var(--teal); color: var(--teal); }
+    .cat-pill.active { border-color: var(--teal); background: var(--teal-lt); color: var(--teal); }
+    .cat-count {
+      font-size: 0.73rem;
+      background: var(--line);
+      border-radius: 20px;
+      padding: 2px 7px;
+      font-weight: 700;
+    }
+    .cat-pill.active .cat-count { background: var(--teal); color: #fff; }
+
+    /* Sidebar action buttons */
+    .sidebar-actions { display: flex; flex-direction: column; gap: 6px; }
+    .sidebar-actions .btn {
+      width: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      padding: 9px 12px;
+    }
+
+    /* â”€â”€â”€ ALLOPHONE MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .allo-main {
+      padding: 32px 24px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .allo-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 0 28px 28px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      max-width: 600px;
+      border-top: 3px solid var(--teal);
+      overflow: hidden;
+    }
+
+    .allo-card-toprow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: calc(100% + 56px);
+      margin: 0 -28px;
+      padding: 10px 20px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .allo-emoji-wrap {
+      width: 124px;
+      height: 124px;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .allo-emoji {
+      font-size: 5.5rem;
+      line-height: 1;
+      animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.07));
+      display: block;
+    }
+
+    /* Write mode */
+    .write-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      align-items: center;
+    }
+    .write-input {
+      flex: 1;
+      padding: 13px 16px;
+      border: 2.5px solid var(--line);
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      outline: none;
+      background: var(--bg);
+      color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .write-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(26,107,122,0.12);
+      background: #fff;
+    }
+    .write-input.correct { border-color: var(--ok); background: var(--ok-lt); }
+    .write-input.wrong   { border-color: var(--ko); background: var(--ko-lt); animation: shake 0.3s; }
+
+    @keyframes shake {
+      0%,100%{ transform:translateX(0) }
+      25%{ transform:translateX(-6px) }
+      75%{ transform:translateX(6px) }
+    }
+
+    .check-btn {
+      padding: 13px 20px;
+      border-radius: 12px;
+      border: none;
+      background: var(--teal);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .check-btn:hover { opacity: 0.86; }
+
+    /* QCM */
+    .qcm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+    .qcm-opt {
+      padding: 16px 10px;
+      border-radius: 12px;
+      border: 2px solid var(--line);
+      background: var(--panel);
+      cursor: pointer;
+      font-size: 0.98rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--ink);
+      transition: all 0.13s;
+    }
+    .qcm-opt:hover { border-color: var(--teal); background: var(--teal-lt); color: var(--teal); }
+    .qcm-opt.correct { border-color: var(--ok); background: var(--ok-lt); color: var(--ok); pointer-events: none; }
+    .qcm-opt.wrong   { border-color: var(--ko); background: var(--ko-lt); color: var(--ko); pointer-events: none; }
+    .qcm-opt.reveal  { border-color: var(--ok); background: var(--ok-lt); color: var(--ok); pointer-events: none; }
+    .qcm-opt.disabled { pointer-events: none; opacity: 0.55; }
+
+    /* Lettres (allophone) */
+    #allo-char-boxes .char-box.filled {
+      color: var(--teal);
+      border-color: var(--teal);
+      background: var(--teal-lt);
+    }
+    #allo-letter-bank .letter-tile:hover {
+      border-color: var(--teal);
+      background: var(--teal-lt);
+      color: var(--teal);
+    }
+
+    /* View mode */
+    .allo-view-word {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--teal);
+      padding: 14px 28px;
+      background: var(--teal-lt);
+      border-radius: 14px;
+      border: 2px solid var(--teal);
+      letter-spacing: 0.04em;
+    }
+
+    /* Nav row */
+    .allo-nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .nav-btn {
+      padding: 10px 16px;
+      border-radius: 11px;
+      border: 1.5px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.13s;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-lt); }
+    .nav-btn.primary {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+      padding: 10px 28px;
+      font-size: 0.95rem;
+    }
+    .nav-btn.primary:hover { opacity: 0.86; }
+    .nav-btn.icon { padding: 10px 14px; font-size: 1.05rem; }
+
+    /* Mode exercise containers */
+    .mode-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .mode-hint {
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* â”€â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    @media (max-width: 700px) {
+      #screen-allophone.active {
+        grid-template-columns: 1fr;
+      }
+      .allo-sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+      .allo-main { padding: 16px; }
+      .allo-card { padding: 22px 16px 18px; }
+      .qcm-grid  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     WELCOME SCREEN
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div id="screen-welcome">
+  <div class="welcome-title">
+    <h1>Atelier Vocabulaire</h1>
+    <p>Choisissez votre parcours pour commencer</p>
+  </div>
+
+  <div class="level-cards">
+
+    <!-- ALPHA -->
+    <div class="level-card alpha">
+      <div class="lc-icon">ðŸŒ±</div>
+      <div class="lc-level">Niveau 1</div>
+      <h2>Je dÃ©couvre les mots</h2>
+      <p class="lc-desc">
+        Pour les personnes qui dÃ©couvrent l'Ã©crit pour la premiÃ¨re fois.
+        Pas besoin de savoir taper au clavier.
+      </p>
+      <div class="lc-features">
+        <div class="lc-feat">Mots simples et courts</div>
+        <div class="lc-feat">Construire le mot avec des lettres</div>
+        <div class="lc-feat">Grandes images, grands boutons</div>
+        <div class="lc-feat">Mode lecture seule disponible</div>
+      </div>
+      <button class="lc-start" onclick="startLevel('alpha')">Commencer â†’</button>
+    </div>
+
+    <!-- NUMERIQUE -->
+    <div class="level-card numerique">
+      <div class="lc-icon">ðŸ’»</div>
+      <div class="lc-level">Niveau 2</div>
+      <h2>Informatique et numerique</h2>
+      <p class="lc-desc">
+        Pour apprendre le vocabulaire de base du PC, d'internet
+        et des outils numeriques du quotidien.
+      </p>
+      <div class="lc-features">
+        <div class="lc-feat">Mots utiles: souris, clavier, Wi-Fi...</div>
+        <div class="lc-feat">Meme exercice que le parcours debutant</div>
+        <div class="lc-feat">Construction du mot avec les lettres</div>
+        <div class="lc-feat">Mode lecture seule disponible</div>
+      </div>
+      <button class="lc-start" onclick="startLevel('numerique')">Commencer â†’</button>
+    </div>
+
+    <!-- ALLOPHONE -->
+    <div class="level-card allophone">
+      <div class="lc-icon">ðŸ“–</div>
+      <div class="lc-level">Niveau 3</div>
+      <h2>Je lis et jâ€™Ã©cris</h2>
+      <p class="lc-desc">
+        Pour les personnes sachant lire et Ã©crire dans une autre langue
+        et qui apprennent le vocabulaire franÃ§ais.
+      </p>
+      <div class="lc-features">
+        <div class="lc-feat">Vocabulaire avec articles (un, uneâ€¦)</div>
+        <div class="lc-feat">4 modes : Ã©criture, QCM, lettres, lecture</div>
+        <div class="lc-feat">Filtre par catÃ©gories de mots</div>
+        <div class="lc-feat">Minuteur de session et statistiques</div>
+      </div>
+      <button class="lc-start" onclick="startLevel('allophone')">Commencer â†’</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     ALPHA SCREEN
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div id="screen-alpha" class="screen">
+  <div class="alpha-wrap">
+
+    <!-- Top bar -->
+    <div class="alpha-topbar">
+      <button class="back-btn" onclick="goHome()">â† Retour</button>
+      <span class="alpha-counter" id="alpha-counter">1 / 22</span>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="margin-bottom:16px;">
+      <div class="progress-track"><div class="progress-fill alpha-fill" id="alpha-bar" style="width:0%"></div></div>
+    </div>
+
+    <!-- Mode toggle -->
+    <div class="alpha-modes">
+      <button class="alpha-mode-btn active" id="alpha-btn-scramble" onclick="setAlphaMode('scramble')">ðŸ”¤ Construire le mot</button>
+      <button class="alpha-mode-btn"        id="alpha-btn-view"     onclick="setAlphaMode('view')">ðŸ‘ Lire seulement</button>
+    </div>
+
+    <!-- Main card -->
+    <div class="alpha-card" id="alpha-card">
+      <div class="cat-hint">
+        <span class="cat-hint-prefix">Ce mot fait partie de la catÃ©gorie :</span>
+        <span id="alpha-cat" class="cat-tag amber">Corps</span>
+      </div>
+      <div id="alpha-emoji" class="alpha-emoji">ðŸŽ</div>
+
+      <!-- Scramble area -->
+      <div class="alpha-scramble-area" id="alpha-scramble">
+        <div class="char-boxes" id="alpha-char-boxes"></div>
+        <div class="letter-bank" id="alpha-letter-bank"></div>
+        <div class="feedback-msg" id="alpha-feedback"></div>
+        <div class="alpha-actions">
+          <button class="btn btn-ghost"  onclick="alphaReset()">RÃ©initialiser</button>
+          <button class="btn btn-amber" id="alpha-next-btn" onclick="alphaNextWord()">Mot suivant â†’</button>
+        </div>
+      </div>
+
+      <!-- View area -->
+      <div class="alpha-view-area" id="alpha-view" style="display:none;">
+        <div class="alpha-view-word" id="alpha-view-word">pomme</div>
+        <p style="color:var(--muted);font-size:0.88rem;font-style:italic;">Lisez le mot, puis passez au suivant</p>
+        <div class="alpha-actions">
+          <button class="btn btn-ghost" onclick="alphaPrevWord()">â† PrÃ©cÃ©dent</button>
+          <button class="btn btn-amber" onclick="alphaNextWord()">Mot suivant â†’</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed panel (alpha) -->
+    <div class="completed-panel" id="alpha-completed" style="margin-top:16px;">
+      <div class="cp-emoji">ðŸŽ‰</div>
+      <h2 style="color:var(--amber);">Bravo !</h2>
+      <div class="cp-pct" id="alpha-pct" style="color:var(--ok);">â€”</div>
+      <p class="cp-sub" id="alpha-sub"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn btn-amber" onclick="alphaRestart()">Recommencer</button>
+        <button class="btn btn-ghost" onclick="goHome()">Changer de parcours</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     ALLOPHONE SCREEN
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div id="screen-allophone" class="screen">
+
+  <!-- â”€â”€ Sidebar â”€â”€ -->
+  <aside class="allo-sidebar">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line);">
+      <button class="back-btn" onclick="goHome()">â† Retour</button>
+      <span class="sidebar-brand">Je lis et jâ€™Ã©cris</span>
+    </div>
+
+    <!-- Timer -->
+    <div class="s-section">
+      <div class="s-section-title">Minuteur de session</div>
+      <div class="allo-timer-display" id="allo-timer">00:00</div>
+      <div class="allo-timer-btns">
+        <button class="timer-btn teal"  onclick="alloStartTimer(30)">30 min</button>
+        <button class="timer-btn teal"  onclick="alloStartTimer(60)">60 min</button>
+        <button class="timer-btn ghost" onclick="alloStopTimer()">Stop</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="s-section">
+      <div class="s-section-title">Progression</div>
+      <div class="progress-track" style="margin-bottom:4px;">
+        <div class="progress-fill allo-fill" id="allo-bar" style="width:0%"></div>
+      </div>
+      <div style="font-size:0.82rem;color:var(--muted);text-align:center;" id="allo-prog-label">0 / 0</div>
+      <div class="stat-grid">
+        <div class="stat-box ok"><div class="sv" id="s-ok">0</div><div class="sl">Correct</div></div>
+        <div class="stat-box ko"><div class="sv" id="s-ko">0</div><div class="sl">Erreurs</div></div>
+        <div class="stat-box nt"><div class="sv" id="s-try">0</div><div class="sl">Tentatives</div></div>
+        <div class="stat-box">   <div class="sv" id="s-pct">â€”</div><div class="sl">RÃ©ussite</div></div>
+      </div>
+    </div>
+
+    <!-- Mode tabs -->
+    <div class="s-section">
+      <div class="s-section-title">Mode d'exercice</div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tab-ecrire"  onclick="setAlloMode('ecrire')">âœï¸ Ã‰crire</button>
+        <button class="mode-tab"        id="tab-qcm"     onclick="setAlloMode('qcm')">ðŸ”˜ QCM</button>
+        <button class="mode-tab"        id="tab-lettres" onclick="setAlloMode('lettres')">ðŸ”¤ Lettres</button>
+        <button class="mode-tab"        id="tab-voir"    onclick="setAlloMode('voir')">ðŸ‘ Lecture</button>
+      </div>
+    </div>
+
+    <!-- Category filter -->
+    <div class="s-section">
+      <div class="s-section-title">CatÃ©gories</div>
+      <div class="cat-filter" id="allo-cats"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="sidebar-actions">
+      <button class="btn btn-ghost"  onclick="alloNewSeries()">â‡„ Nouvelle sÃ©rie</button>
+    </div>
+  </aside>
+
+  <!-- â”€â”€ Main â”€â”€ -->
+  <main class="allo-main">
+
+    <!-- Exercise card -->
+    <div class="allo-card" id="allo-card">
+      <div class="allo-card-toprow">
+        <span style="font-size:0.82rem;color:var(--muted);font-weight:700;" id="allo-word-num">Mot 1 / 0</span>
+      </div>
+      <div class="cat-hint">
+        <span class="cat-hint-prefix">Ce mot fait partie de la catÃ©gorie :</span>
+        <span id="allo-cat" class="cat-tag teal">Fruits</span>
+      </div>
+      <div class="allo-emoji-wrap">
+        <div id="allo-emoji" class="allo-emoji">ðŸŽ</div>
+      </div>
+
+      <!-- Mode: Ã‰crire -->
+      <div class="mode-area" id="allo-m-ecrire">
+        <p class="mode-hint">Ã‰crivez le mot correspondant Ã  l'image (article inclus si possible)</p>
+        <div class="write-row">
+          <input class="write-input" id="allo-input" type="text"
+            placeholder="Votre rÃ©ponseâ€¦" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="check-btn" id="allo-check-btn" onclick="alloCheck()">VÃ©rifier</button>
+        </div>
+        <div class="feedback-msg" id="allo-fb-write"></div>
+      </div>
+
+      <!-- Mode: QCM -->
+      <div class="mode-area" id="allo-m-qcm" style="display:none;">
+        <p class="mode-hint">Choisissez le mot qui correspond Ã  l'image</p>
+        <div class="qcm-grid" id="allo-qcm-grid"></div>
+        <div class="feedback-msg" id="allo-fb-qcm"></div>
+      </div>
+
+      <!-- Mode: Lettres -->
+      <div class="mode-area" id="allo-m-lettres" style="display:none;">
+        <p class="mode-hint">Remettez les lettres dans le bon ordre</p>
+        <div class="char-boxes" id="allo-char-boxes"></div>
+        <div class="letter-bank" id="allo-letter-bank"></div>
+        <div class="feedback-msg" id="allo-fb-lettres"></div>
+        <button class="btn btn-ghost" style="font-size:0.85rem;" onclick="alloLettersReset()">RÃ©initialiser</button>
+      </div>
+
+      <!-- Mode: Voir -->
+      <div class="mode-area" id="allo-m-voir" style="display:none;">
+        <p class="mode-hint">Lisez et mÃ©morisez ce mot</p>
+        <div class="allo-view-word" id="allo-view-word">â€”</div>
+        <p style="font-size:0.82rem;color:var(--muted);">Utilisez les flÃ¨ches du clavier ou les boutons ci-dessous</p>
+      </div>
+
+      <!-- Navigation -->
+      <div class="allo-nav">
+        <button class="nav-btn" onclick="alloPrev()">â† PrÃ©cÃ©dent</button>
+        <button class="nav-btn icon" onclick="alloShuffle()" title="MÃ©langer la sÃ©rie">â‡„</button>
+        <button class="nav-btn primary" onclick="alloNext()">Suivant â†’</button>
+      </div>
+    </div>
+
+    <!-- Completed (allophone) -->
+    <div class="completed-panel" id="allo-completed" style="max-width:640px;width:100%;">
+      <div class="cp-emoji">ðŸŽ‰</div>
+      <h2 style="color:var(--teal);">SÃ©rie terminÃ©e !</h2>
+      <div class="cp-pct" id="allo-pct" style="color:var(--ok);">â€”</div>
+      <p class="cp-sub" id="allo-sub"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn btn-teal"  onclick="alloRestart()">Recommencer cette sÃ©rie</button>
+        <button class="btn btn-ghost" onclick="goHome()">Changer de parcours</button>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SCRIPT
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<script>
+"use strict";
+
+/* â”€â”€â”€ Vocabulary banks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+const VOCAB_ALPHA = [
+  // Corps
+  { emoji:"ðŸ‘ï¸", word:"Å“il",       cat:"Corps" },
+  { emoji:"ðŸ‘ƒ", word:"nez",        cat:"Corps" },
+  { emoji:"ðŸ‘„", word:"bouche",     cat:"Corps" },
+  { emoji:"ðŸ‘‚", word:"oreille",    cat:"Corps" },
+  { emoji:"âœ‹", word:"main",       cat:"Corps" },
+  { emoji:"ðŸ¦¶", word:"pied",       cat:"Corps" },
+  { emoji:"ðŸ¦·", word:"dent",       cat:"Corps" },
+  // Nourriture
+  { emoji:"ðŸŽ", word:"pomme",      cat:"Nourriture" },
+  { emoji:"ðŸž", word:"pain",       cat:"Nourriture" },
+  { emoji:"ðŸ’§", word:"eau",        cat:"Nourriture" },
+  { emoji:"ðŸ¥›", word:"lait",       cat:"Nourriture" },
+  { emoji:"ðŸš", word:"riz",        cat:"Nourriture" },
+  { emoji:"ðŸ‹", word:"citron",     cat:"Nourriture" },
+  { emoji:"ðŸ¥š", word:"Å“uf",        cat:"Nourriture" },
+  { emoji:"ðŸ«™", word:"sel",        cat:"Nourriture" },
+  // Maison
+  { emoji:"ðŸ›ï¸", word:"lit",        cat:"Maison" },
+  { emoji:"ðŸšª", word:"porte",      cat:"Maison" },
+  { emoji:"ðŸ’¡", word:"lampe",      cat:"Maison" },
+  { emoji:"ðŸª‘", word:"chaise",     cat:"Maison" },
+  { emoji:"ðŸ”‘", word:"clÃ©",        cat:"Maison" },
+  // Vie quotidienne
+  { emoji:"ðŸšŒ", word:"bus",        cat:"Quotidien" },
+  { emoji:"ðŸ«", word:"Ã©cole",      cat:"Quotidien" },
+];
+
+const VOCAB_NUMERIQUE = [
+  // MatÃ©riel
+  { emoji:"ðŸ–±ï¸", word:"souris",       cat:"MatÃ©riel" },
+  { emoji:"âŒ¨ï¸", word:"clavier",      cat:"MatÃ©riel" },
+  { emoji:"ðŸ–¥ï¸", word:"Ã©cran",        cat:"MatÃ©riel" },
+  { emoji:"ðŸ’»", word:"ordinateur",   cat:"MatÃ©riel" },
+  { emoji:"ðŸ–¨ï¸", word:"imprimante",   cat:"MatÃ©riel" },
+  { emoji:"ðŸŽ§", word:"casque",       cat:"MatÃ©riel" },
+  { emoji:"ðŸ”Š", word:"haut-parleur", cat:"MatÃ©riel" },
+  { emoji:"ðŸ”‹", word:"batterie",     cat:"MatÃ©riel" },
+  { emoji:"ðŸ”Œ", word:"cÃ¢ble",        cat:"MatÃ©riel" },
+  { img:"assets/icon-calculator.svg", word:"calculatrice", cat:"MatÃ©riel" },
+  // Internet et rÃ©seau
+  { emoji:"ðŸ›œ", word:"WIFI",        cat:"RÃ©seau" },
+  { emoji:"ðŸŒ", word:"internet",     cat:"RÃ©seau" },
+  { img:"assets/icon-router.svg", word:"routeur", cat:"RÃ©seau" },
+  { emoji:"â˜ï¸", word:"cloud",        cat:"RÃ©seau" },
+  // Usages numÃ©riques
+  { emoji:"ðŸ“§", word:"email",     cat:"Usages" },
+  { emoji:"ðŸ”’", word:"mot de passe", cat:"Usages" },
+  { emoji:"ðŸ—‚ï¸", word:"dossier",      cat:"Usages" },
+  { emoji:"ðŸ“„", word:"fichier",      cat:"Usages" },
+  { img:"assets/icon-chrome.svg", word:"navigateur", cat:"Usages" },
+  { emoji:"ðŸ“±", word:"tÃ©lÃ©phone",    cat:"Usages" },
+];
+
+const VOCAB_ALLOPHONE = [
+  // Fruits
+  { emoji:"ðŸŽ", word:"une pomme",          cat:"Fruits" },
+  { emoji:"ðŸŒ", word:"une banane",         cat:"Fruits" },
+  { emoji:"ðŸŠ", word:"une orange",         cat:"Fruits" },
+  { emoji:"ðŸ“", word:"une fraise",         cat:"Fruits" },
+  { emoji:"ðŸ‡", word:"du raisin",          cat:"Fruits" },
+  { emoji:"ðŸ‹", word:"un citron",          cat:"Fruits" },
+  { emoji:"ðŸ‘", word:"une pÃªche",          cat:"Fruits" },
+  { emoji:"ðŸ", word:"un ananas",          cat:"Fruits" },
+  { emoji:"ðŸˆ", word:"un melon",           cat:"Fruits" },
+  // LÃ©gumes
+  { emoji:"ðŸ¥•", word:"une carotte",        cat:"LÃ©gumes" },
+  { emoji:"ðŸ…", word:"une tomate",         cat:"LÃ©gumes" },
+  { emoji:"ðŸ¥¦", word:"du brocoli",         cat:"LÃ©gumes" },
+  { emoji:"ðŸ§…", word:"un oignon",          cat:"LÃ©gumes" },
+  { emoji:"ðŸ¥”", word:"une pomme de terre", cat:"LÃ©gumes" },
+  { emoji:"ðŸ¥¬", word:"de la salade",       cat:"LÃ©gumes" },
+  { emoji:"ðŸ«›", word:"des haricots",       cat:"LÃ©gumes" },
+  // Animaux
+  { emoji:"ðŸ¶", word:"un chien",           cat:"Animaux" },
+  { emoji:"ðŸ±", word:"un chat",            cat:"Animaux" },
+  { emoji:"ðŸ¦", word:"un oiseau",          cat:"Animaux" },
+  { emoji:"ðŸ ", word:"un poisson",         cat:"Animaux" },
+  { emoji:"ðŸ‡", word:"un lapin",           cat:"Animaux" },
+  { emoji:"ðŸ˜", word:"un Ã©lÃ©phant",        cat:"Animaux" },
+  { emoji:"ðŸ¦", word:"un lion",            cat:"Animaux" },
+  { emoji:"ðŸ„", word:"une vache",          cat:"Animaux" },
+  // Maison
+  { emoji:"ðŸª‘", word:"une chaise",         cat:"Maison" },
+  { emoji:"ðŸ›ï¸", word:"un lit",             cat:"Maison" },
+  { emoji:"ðŸšª", word:"une porte",          cat:"Maison" },
+  { emoji:"ðŸªŸ", word:"une fenÃªtre",        cat:"Maison" },
+  { emoji:"ðŸ’¡", word:"une lampe",          cat:"Maison" },
+  { emoji:"ðŸ“º", word:"une tÃ©lÃ©vision",     cat:"Maison" },
+  { emoji:"ðŸ›", word:"une baignoire",      cat:"Maison" },
+  { emoji:"ðŸš¿", word:"une douche",         cat:"Maison" },
+  { emoji:"ðŸ½ï¸", word:"une assiette",       cat:"Maison" },
+  { emoji:"ðŸ¥„", word:"une cuillÃ¨re",       cat:"Maison" },
+  // Corps
+  { emoji:"ðŸ‘ï¸", word:"un Å“il",             cat:"Corps" },
+  { emoji:"ðŸ‘‚", word:"une oreille",        cat:"Corps" },
+  { emoji:"ðŸ‘ƒ", word:"un nez",             cat:"Corps" },
+  { emoji:"ðŸ¦·", word:"une dent",           cat:"Corps" },
+  { emoji:"âœ‹", word:"une main",           cat:"Corps" },
+  { emoji:"ðŸ¦¶", word:"un pied",            cat:"Corps" },
+  { emoji:"ðŸ’ª", word:"un bras",            cat:"Corps" },
+  { emoji:"ðŸ¦´", word:"un os",              cat:"Corps" },
+  // Vie quotidienne
+  { emoji:"ðŸšŒ", word:"un bus",             cat:"Quotidien" },
+  { emoji:"ðŸš²", word:"un vÃ©lo",            cat:"Quotidien" },
+  { emoji:"ðŸš—", word:"une voiture",        cat:"Quotidien" },
+  { emoji:"ðŸ«", word:"une Ã©cole",          cat:"Quotidien" },
+  { emoji:"ðŸ¥", word:"un hÃ´pital",         cat:"Quotidien" },
+  { emoji:"ðŸª", word:"un magasin",         cat:"Quotidien" },
+  { emoji:"ðŸ”‘", word:"une clÃ©",            cat:"Quotidien" },
+  { emoji:"ðŸ“ž", word:"un tÃ©lÃ©phone",       cat:"Quotidien" },
+  { emoji:"ðŸ’Š", word:"un mÃ©dicament",      cat:"Quotidien" },
+  { emoji:"âœ‰ï¸", word:"une lettre",         cat:"Quotidien" },
+  // VÃªtements
+  { emoji:"ðŸ‘•", word:"un t-shirt",         cat:"VÃªtements" },
+  { emoji:"ðŸ‘–", word:"un pantalon",        cat:"VÃªtements" },
+  { emoji:"ðŸ‘—", word:"une robe",           cat:"VÃªtements" },
+  { emoji:"ðŸ§¥", word:"un manteau",         cat:"VÃªtements" },
+  { emoji:"ðŸ‘Ÿ", word:"une chaussure",      cat:"VÃªtements" },
+  { emoji:"ðŸ§£", word:"une Ã©charpe",        cat:"VÃªtements" },
+  { emoji:"ðŸ§¢", word:"une casquette",      cat:"VÃªtements" },
+];
+
+/* â”€â”€â”€ Utils â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function norm(s) {
+  return (s || '').toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function stripArticle(s) {
+  return s.replace(/^(un|une|du|de la|des|le|la|les)\s+/i, '').toLowerCase().trim();
+}
+
+/* â”€â”€â”€ Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function goHome() {
+  document.getElementById('screen-welcome').style.display = 'flex';
+  document.getElementById('screen-alpha').classList.remove('active');
+  document.getElementById('screen-allophone').classList.remove('active');
+  alloStopTimer();
+}
+
+function startLevel(level) {
+  document.getElementById('screen-welcome').style.display = 'none';
+  if (level === 'alpha') {
+    aSource = VOCAB_ALPHA;
+    document.getElementById('screen-alpha').classList.add('active');
+    alphaInit();
+  } else if (level === 'numerique') {
+    aSource = VOCAB_NUMERIQUE;
+    document.getElementById('screen-alpha').classList.add('active');
+    alphaInit();
+  } else {
+    document.getElementById('screen-allophone').classList.add('active');
+    alloInit();
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ALPHA ENGINE
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+let aDeck      = [];
+let aSource    = VOCAB_ALPHA;
+let aIdx       = 0;
+let aCorrect   = 0;
+let aAnswered  = false;
+let aMode      = 'scramble';
+let aPool      = [];   // letter pool
+let aTyped     = [];   // typed chars
+let aTarget    = [];   // target chars (spaces included)
+let aNextTimer = null; // pending auto-advance timer
+
+function alphaInit() {
+  aDeck    = shuffle(aSource);
+  aIdx     = 0;
+  aCorrect = 0;
+  document.getElementById('alpha-completed').classList.remove('show');
+  document.getElementById('alpha-card').style.display = 'flex';
+  alphaLoad();
+}
+
+function alphaRestart() { alphaInit(); }
+
+function alphaLoad() {
+  aAnswered = false;
+  const w = aDeck[aIdx];
+
+  // Emoji
+  const em = document.getElementById('alpha-emoji');
+  em.style.animation = 'none';
+  void em.offsetWidth;
+  em.style.animation = '';
+  if (w.img) {
+    em.classList.add('has-image');
+    em.innerHTML = `<img class="alpha-emoji-img" src="${w.img}" alt="${w.word}">`;
+  } else {
+    em.classList.remove('has-image');
+    em.textContent = w.emoji;
+  }
+
+  document.getElementById('alpha-cat').textContent = w.cat;
+
+  const total = aDeck.length;
+  document.getElementById('alpha-counter').textContent = `${aIdx + 1} / ${total}`;
+  document.getElementById('alpha-bar').style.width = `${((aIdx + 1) / total) * 100}%`;
+
+  if (aMode === 'scramble') {
+    alphaSetupScramble(w);
+  } else {
+    document.getElementById('alpha-view-word').textContent = w.word;
+  }
+
+  document.getElementById('alpha-feedback').textContent = '';
+  document.getElementById('alpha-feedback').className = 'feedback-msg';
+}
+
+function alphaSetupScramble(w) {
+  aTarget = [...w.word];
+  const letters = aTarget.filter(c => c !== ' ');
+  aTyped = aTarget.map(c => (c === ' ' ? ' ' : ''));
+  aPool  = shuffle(letters).map((l, i) => ({ l, uid: i, used: false }));
+  renderAChars();
+  renderALetters();
+}
+
+function renderAChars() {
+  const c = document.getElementById('alpha-char-boxes');
+  c.innerHTML = '';
+  aTyped.forEach((ch, i) => {
+    const box = document.createElement('div');
+    if (ch === ' ') {
+      box.className = 'char-box space';
+      box.textContent = ' ';
+    } else {
+      box.className = 'char-box ' + (ch ? 'filled' : 'empty');
+      box.textContent = ch ? ch : '  ';
+      if (ch) box.onclick = () => aRemoveChar(i);
+    }
+    c.appendChild(box);
+  });
+}
+
+function renderALetters() {
+  const c = document.getElementById('alpha-letter-bank');
+  c.innerHTML = '';
+  aPool.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'letter-tile' + (item.used ? ' used' : '');
+    btn.textContent = item.l;
+    btn.onclick = () => aAddLetter(item);
+    c.appendChild(btn);
+  });
+}
+
+function aAddLetter(item) {
+  if (aAnswered || item.used) return;
+  const next = aTyped.indexOf('');
+  if (next === -1) return;
+  item.used = true;
+  aTyped[next] = item.l;
+  renderAChars();
+  renderALetters();
+  if (!aTyped.includes('')) aCheckScramble();
+}
+
+function aRemoveChar(i) {
+  if (aAnswered) return;
+  const letter = aTyped[i];
+  aTyped[i] = '';
+  const pi = aPool.find(p => p.used && p.l === letter);
+  if (pi) pi.used = false;
+  renderAChars();
+  renderALetters();
+}
+
+function aCheckScramble() {
+  const w   = aDeck[aIdx];
+  const ans = aTyped.join('');
+  const ok  = norm(ans) === norm(w.word);
+  const fb  = document.getElementById('alpha-feedback');
+
+  if (ok) {
+    fb.textContent = 'âœ“ ' + w.word;
+    fb.className   = 'feedback-msg ok';
+    aCorrect++;
+    aAnswered = true;
+    const btn = document.getElementById('alpha-next-btn');
+    if (btn) btn.disabled = true;
+    aNextTimer = setTimeout(alphaNextWord, 1300);
+  } else {
+    fb.textContent = 'âœ— Essayez encoreâ€¦';
+    fb.className   = 'feedback-msg ko';
+    setTimeout(() => {
+      aTyped = aTarget.map(c => (c === ' ' ? ' ' : ''));
+      aPool.forEach(p => p.used = false);
+      renderAChars();
+      renderALetters();
+      fb.textContent = '';
+      fb.className   = 'feedback-msg';
+    }, 900);
+  }
+}
+
+function alphaReset() {
+  if (aMode !== 'scramble') return;
+  aTyped = aTarget.map(c => (c === ' ' ? ' ' : ''));
+  aPool.forEach(p => p.used = false);
+  renderAChars();
+  renderALetters();
+  document.getElementById('alpha-feedback').textContent = '';
+  document.getElementById('alpha-feedback').className   = 'feedback-msg';
+}
+
+function alphaNextWord() {
+  if (aNextTimer) { clearTimeout(aNextTimer); aNextTimer = null; }
+  const btn = document.getElementById('alpha-next-btn');
+  if (btn) btn.disabled = false;
+  if (aIdx < aDeck.length - 1) {
+    aIdx++;
+    alphaLoad();
+  } else {
+    alphaShowCompleted();
+  }
+}
+
+function alphaPrevWord() {
+  if (aIdx > 0) { aIdx--; alphaLoad(); }
+}
+
+function alphaShowCompleted() {
+  document.getElementById('alpha-card').style.display = 'none';
+  const comp = document.getElementById('alpha-completed');
+  comp.classList.add('show');
+  const pct = Math.round((aCorrect / aDeck.length) * 100);
+  document.getElementById('alpha-pct').textContent = pct + ' %';
+  document.getElementById('alpha-sub').textContent =
+    `${aCorrect} bonne${aCorrect !== 1 ? 's' : ''} rÃ©ponse${aCorrect !== 1 ? 's' : ''} sur ${aDeck.length} mots`;
+}
+
+function setAlphaMode(m) {
+  aMode = m;
+  const isSc = m === 'scramble';
+  document.getElementById('alpha-scramble').style.display = isSc  ? 'flex' : 'none';
+  document.getElementById('alpha-view').style.display     = !isSc ? 'flex' : 'none';
+  document.getElementById('alpha-btn-scramble').classList.toggle('active', isSc);
+  document.getElementById('alpha-btn-view').classList.toggle('active', !isSc);
+  alphaLoad();
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ALLOPHONE ENGINE
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+let oVocab     = [];   // filtered vocab
+let oDeck      = [];   // current ordered deck
+let oIdx       = 0;
+let oCorrect   = 0;
+let oWrong     = 0;
+let oTries     = 0;
+let oAnswered  = false;
+let oMode      = 'ecrire';
+let oActiveCat = new Set();
+let oTimerId   = null;
+let oSecs      = 0;
+let oPool      = [];
+let oTyped     = [];
+let oTarget    = [];   // target chars (spaces included)
+
+function alloInit() {
+  const cats = [...new Set(VOCAB_ALLOPHONE.map(w => w.cat))];
+  oActiveCat = new Set(cats);
+  oCorrect = 0; oWrong = 0; oTries = 0;
+  buildCatFilter(cats);
+  alloUpdateStats();
+  alloBuildDeck();
+  setAlloMode('ecrire');
+  document.getElementById('allo-completed').classList.remove('show');
+  document.getElementById('allo-card').style.display = 'flex';
+}
+
+function alloBuildDeck() {
+  oVocab = VOCAB_ALLOPHONE.filter(w => oActiveCat.has(w.cat));
+  oDeck  = shuffle(oVocab);
+  oIdx   = 0;
+  oAnswered = false;
+  alloUpdateProgress();
+  if (oDeck.length > 0) alloLoad();
+}
+
+function buildCatFilter(cats) {
+  const c = document.getElementById('allo-cats');
+  c.innerHTML = '';
+  cats.forEach(cat => {
+    const n    = VOCAB_ALLOPHONE.filter(w => w.cat === cat).length;
+    const pill = document.createElement('button');
+    pill.className    = 'cat-pill active';
+    pill.dataset.cat  = cat;
+    pill.innerHTML    = `<span>${cat}</span><span class="cat-count">${n}</span>`;
+    pill.onclick      = () => toggleCat(cat, pill);
+    c.appendChild(pill);
+  });
+}
+
+function toggleCat(cat, pill) {
+  if (oActiveCat.has(cat)) {
+    if (oActiveCat.size === 1) return;
+    oActiveCat.delete(cat);
+    pill.classList.remove('active');
+  } else {
+    oActiveCat.add(cat);
+    pill.classList.add('active');
+  }
+  alloBuildDeck();
+}
+
+function alloLoad() {
+  oAnswered = false;
+  const w = oDeck[oIdx];
+
+  const em = document.getElementById('allo-emoji');
+  em.style.animation = 'none';
+  void em.offsetWidth;
+  em.style.animation = '';
+  em.textContent = w.emoji;
+
+  document.getElementById('allo-cat').textContent = w.cat;
+  alloUpdateProgress();
+  alloClearFeedback();
+
+  document.getElementById('allo-check-btn').textContent = 'VÃ©rifier';
+
+  if (oMode === 'ecrire') {
+    const inp = document.getElementById('allo-input');
+    inp.value     = '';
+    inp.className = 'write-input';
+    inp.focus();
+  } else if (oMode === 'qcm') {
+    alloSetupQCM(w);
+  } else if (oMode === 'lettres') {
+    alloSetupLettres(w);
+  } else {
+    document.getElementById('allo-view-word').textContent = w.word;
+  }
+}
+
+function alloClearFeedback() {
+  ['allo-fb-write', 'allo-fb-qcm', 'allo-fb-lettres'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '';
+    el.className   = 'feedback-msg';
+  });
+}
+
+function alloUpdateProgress() {
+  const total = oDeck.length;
+  const cur   = Math.min(oIdx + 1, total);
+  document.getElementById('allo-prog-label').textContent = `${cur} / ${total}`;
+  document.getElementById('allo-word-num').textContent   = `Mot ${cur} / ${total}`;
+  document.getElementById('allo-bar').style.width = `${total ? (cur / total) * 100 : 0}%`;
+}
+
+function alloUpdateStats() {
+  document.getElementById('s-ok').textContent  = oCorrect;
+  document.getElementById('s-ko').textContent  = oWrong;
+  document.getElementById('s-try').textContent = oTries;
+  document.getElementById('s-pct').textContent =
+    oTries > 0 ? Math.round((oCorrect / oTries) * 100) + ' %' : 'â€”';
+}
+
+/* Write mode */
+function alloCheck() {
+  if (oAnswered) { alloNext(); return; }
+
+  const w   = oDeck[oIdx];
+  const inp = document.getElementById('allo-input');
+  const val = inp.value.trim();
+
+  if (!val) {
+    const fb = document.getElementById('allo-fb-write');
+    fb.textContent = 'Entrez un mot avant de valider.';
+    fb.className   = 'feedback-msg ko';
+    return;
+  }
+
+  const nVal     = norm(val);
+  const targets  = [norm(w.word), norm(stripArticle(w.word))];
+  const ok       = targets.some(t => nVal === t);
+
+  oTries++;
+  const fb = document.getElementById('allo-fb-write');
+
+  if (ok) {
+    inp.className  = 'write-input correct';
+    fb.textContent = 'âœ“ Correct â€” ' + w.word;
+    fb.className   = 'feedback-msg ok';
+    oCorrect++;
+  } else {
+    inp.className  = 'write-input wrong';
+    fb.textContent = `âœ— RÃ©ponse attendue : ${w.word}`;
+    fb.className   = 'feedback-msg ko';
+    oWrong++;
+  }
+
+  oAnswered = true;
+  alloUpdateStats();
+  document.getElementById('allo-check-btn').textContent = 'Mot suivant â†’';
+}
+
+/* QCM mode */
+function alloSetupQCM(w) {
+  const grid  = document.getElementById('allo-qcm-grid');
+  grid.innerHTML = '';
+
+  // Pick 3 distractors from full bank (never the correct word)
+  const pool  = VOCAB_ALLOPHONE.filter(v => norm(v.word) !== norm(w.word));
+  const opts  = shuffle([w, ...shuffle(pool).slice(0, 3)]);
+
+  opts.forEach(opt => {
+    const btn  = document.createElement('button');
+    btn.className = 'qcm-opt';
+    btn.textContent = stripArticle(opt.word);
+    btn.onclick = () => alloQCMPick(opt, w, grid);
+    grid.appendChild(btn);
+  });
+}
+
+function alloQCMPick(chosen, correct, grid) {
+  if (oAnswered) return;
+  oAnswered = true;
+  oTries++;
+
+  const isOk = norm(chosen.word) === norm(correct.word);
+  const fb   = document.getElementById('allo-fb-qcm');
+
+  grid.querySelectorAll('.qcm-opt').forEach(btn => {
+    const t = norm(btn.textContent);
+    if (t === norm(stripArticle(correct.word)))  btn.classList.add('reveal');
+    else if (t === norm(stripArticle(chosen.word)) && !isOk) btn.classList.add('wrong');
+    else btn.classList.add('disabled');
+    btn.style.pointerEvents = 'none';
+  });
+
+  if (isOk) {
+    fb.textContent = 'âœ“ Correct â€” ' + correct.word;
+    fb.className   = 'feedback-msg ok';
+    oCorrect++;
+  } else {
+    fb.textContent = `âœ— RÃ©ponse attendue : ${correct.word}`;
+    fb.className   = 'feedback-msg ko';
+    oWrong++;
+  }
+
+  alloUpdateStats();
+}
+
+/* Lettres mode */
+function alloSetupLettres(w) {
+  document.getElementById('allo-fb-lettres').textContent = '';
+  document.getElementById('allo-fb-lettres').className   = 'feedback-msg';
+
+  const clean  = stripArticle(w.word);
+  oTarget = [...clean];
+  const letters = oTarget.filter(c => c !== ' ');
+  oTyped = oTarget.map(c => (c === ' ' ? ' ' : ''));
+  oPool  = shuffle(letters).map((l, i) => ({ l, uid: i, used: false }));
+
+  renderOChars();
+  renderOLetters();
+}
+
+function renderOChars() {
+  const c = document.getElementById('allo-char-boxes');
+  c.innerHTML = '';
+  oTyped.forEach((ch, i) => {
+    const box = document.createElement('div');
+    if (ch === ' ') {
+      box.className = 'char-box space';
+      box.textContent = ' ';
+    } else {
+      box.className = 'char-box ' + (ch ? 'filled' : 'empty');
+      box.textContent = ch ? ch : '  ';
+      if (ch) box.onclick = () => oRemoveChar(i);
+    }
+    c.appendChild(box);
+  });
+}
+
+function renderOLetters() {
+  const c = document.getElementById('allo-letter-bank');
+  c.innerHTML = '';
+  oPool.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'letter-tile' + (item.used ? ' used' : '');
+    btn.textContent = item.l;
+    btn.onclick = () => oAddLetter(item);
+    c.appendChild(btn);
+  });
+}
+
+function oAddLetter(item) {
+  if (oAnswered || item.used) return;
+  const next = oTyped.indexOf('');
+  if (next === -1) return;
+  item.used = true;
+  oTyped[next] = item.l;
+  renderOChars();
+  renderOLetters();
+  if (!oTyped.includes('')) alloCheckLettres();
+}
+
+function oRemoveChar(i) {
+  if (oAnswered) return;
+  const letter = oTyped[i];
+  oTyped[i] = '';
+  const pi = oPool.find(p => p.used && p.l === letter);
+  if (pi) pi.used = false;
+  renderOChars();
+  renderOLetters();
+}
+
+function alloLettersReset() {
+  oTyped = oTarget.map(c => (c === ' ' ? ' ' : ''));
+  oPool.forEach(p => p.used = false);
+  renderOChars();
+  renderOLetters();
+  document.getElementById('allo-fb-lettres').textContent = '';
+  document.getElementById('allo-fb-lettres').className   = 'feedback-msg';
+}
+
+function alloCheckLettres() {
+  const w     = oDeck[oIdx];
+  const clean = stripArticle(w.word);
+  const ans   = oTyped.join('');
+  const ok    = norm(ans) === norm(clean);
+
+  oTries++;
+  const fb = document.getElementById('allo-fb-lettres');
+
+  if (ok) {
+    fb.textContent = 'âœ“ Correct â€” ' + w.word;
+    fb.className   = 'feedback-msg ok';
+    oCorrect++;
+    oAnswered = true;
+    alloUpdateStats();
+    setTimeout(alloNext, 1300);
+  } else {
+    fb.textContent = 'âœ— Essayez encoreâ€¦';
+    fb.className   = 'feedback-msg ko';
+    oWrong++;
+    alloUpdateStats();
+    setTimeout(() => {
+      oTyped = oTarget.map(c => (c === ' ' ? ' ' : ''));
+      oPool.forEach(p => p.used = false);
+      renderOChars();
+      renderOLetters();
+      fb.textContent = '';
+      fb.className   = 'feedback-msg';
+    }, 900);
+  }
+}
+
+/* Navigation */
+function alloNext() {
+  if (oIdx < oDeck.length - 1) {
+    oIdx++;
+    alloLoad();
+  } else {
+    alloShowCompleted();
+  }
+}
+
+function alloPrev() {
+  if (oIdx > 0) { oIdx--; alloLoad(); }
+}
+
+function alloShuffle() {
+  oDeck = shuffle(oDeck);
+  oIdx  = 0;
+  alloLoad();
+}
+
+function alloNewSeries() {
+  oCorrect = 0; oWrong = 0; oTries = 0;
+  alloUpdateStats();
+  document.getElementById('allo-card').style.display = 'flex';
+  document.getElementById('allo-completed').classList.remove('show');
+  alloBuildDeck();
+}
+
+function alloRestart() {
+  document.getElementById('allo-card').style.display = 'flex';
+  document.getElementById('allo-completed').classList.remove('show');
+  oCorrect = 0; oWrong = 0; oTries = 0;
+  alloUpdateStats();
+  alloBuildDeck();
+}
+
+function alloShowCompleted() {
+  document.getElementById('allo-card').style.display = 'none';
+  const comp = document.getElementById('allo-completed');
+  comp.classList.add('show');
+  const pct = oTries > 0 ? Math.round((oCorrect / oTries) * 100) : 0;
+  document.getElementById('allo-pct').textContent = pct + ' %';
+  document.getElementById('allo-sub').textContent =
+    `${oCorrect} bonne${oCorrect !== 1 ? 's' : ''} rÃ©ponse${oCorrect !== 1 ? 's' : ''} sur ${oTries} tentative${oTries !== 1 ? 's' : ''}`;
+}
+
+/* Mode switching */
+function setAlloMode(m) {
+  oMode = m;
+  ['ecrire', 'qcm', 'lettres', 'voir'].forEach(id => {
+    document.getElementById('allo-m-' + id).style.display = (id === m) ? 'flex' : 'none';
+    document.getElementById('tab-' + id).classList.toggle('active', id === m);
+  });
+  if (oDeck.length > 0) alloLoad();
+}
+
+/* Timer */
+function alloStartTimer(minutes) {
+  alloStopTimer();
+  oSecs = minutes * 60;
+  renderTimer();
+  oTimerId = setInterval(() => {
+    oSecs--;
+    renderTimer();
+    if (oSecs <= 0) {
+      alloStopTimer();
+      const el = document.getElementById('allo-timer');
+      el.textContent = 'Temps Ã©coulÃ©';
+      el.style.color = 'var(--ko)';
+    }
+  }, 1000);
+}
+
+function alloStopTimer() {
+  if (oTimerId) { clearInterval(oTimerId); oTimerId = null; }
+  document.getElementById('allo-timer').style.color = '';
+}
+
+function renderTimer() {
+  const m = Math.floor(oSecs / 60).toString().padStart(2, '0');
+  const s = (oSecs % 60).toString().padStart(2, '0');
+  document.getElementById('allo-timer').textContent = m + ':' + s;
+}
+
+/* Keyboard shortcuts */
+function isEditableTarget(el) {
+  if (!el) return false;
+  const tag = (el.tagName || '').toLowerCase();
+  return el.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select';
+}
+
+function findUnusedPoolItem(pool, keyChar) {
+  const nk = norm(keyChar);
+  return pool.find(item => !item.used && norm(item.l) === nk);
+}
+
+function alphaAddLetterFromKey(key) {
+  if (aMode !== 'scramble' || aAnswered) return false;
+  if (!key || key.length !== 1 || /\s/.test(key)) return false;
+  const item = findUnusedPoolItem(aPool, key.toLowerCase());
+  if (!item) return false;
+  aAddLetter(item);
+  return true;
+}
+
+function alphaRemoveLastLetter() {
+  if (aMode !== 'scramble' || aAnswered) return false;
+  for (let i = aTyped.length - 1; i >= 0; i--) {
+    if (aTyped[i] && aTyped[i] !== ' ') {
+      aRemoveChar(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+function alloAddLetterFromKey(key) {
+  if (oMode !== 'lettres' || oAnswered) return false;
+  if (!key || key.length !== 1 || /\s/.test(key)) return false;
+  const item = findUnusedPoolItem(oPool, key.toLowerCase());
+  if (!item) return false;
+  oAddLetter(item);
+  return true;
+}
+
+function alloRemoveLastLetter() {
+  if (oMode !== 'lettres' || oAnswered) return false;
+  for (let i = oTyped.length - 1; i >= 0; i--) {
+    if (oTyped[i] && oTyped[i] !== ' ') {
+      oRemoveChar(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+function alloPickQCMByDigit(digit) {
+  if (oMode !== 'qcm' || oAnswered) return false;
+  const idx = Number(digit) - 1;
+  const opts = [...document.querySelectorAll('#allo-qcm-grid .qcm-opt')];
+  if (idx < 0 || idx >= opts.length) return false;
+  opts[idx].click();
+  return true;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  const key = e.key;
+  const editable = isEditableTarget(e.target);
+
+  // Welcome: 1 alpha, 2 numerique, 3 allophone
+  if (document.getElementById('screen-welcome').style.display !== 'none' && !editable) {
+    if (key === '1') { e.preventDefault(); startLevel('alpha'); return; }
+    if (key === '2') { e.preventDefault(); startLevel('numerique'); return; }
+    if (key === '3') { e.preventDefault(); startLevel('allophone'); return; }
+  }
+
+  // Alpha + Numerique (same engine)
+  if (document.getElementById('screen-alpha').classList.contains('active')) {
+    if (key === 'ArrowRight') { e.preventDefault(); alphaNextWord(); return; }
+    if (key === 'ArrowLeft')  { e.preventDefault(); alphaPrevWord(); return; }
+    if (key === 'Enter' && (aMode === 'view' || aAnswered)) { e.preventDefault(); alphaNextWord(); return; }
+    if ((key === 'Backspace' || key === 'Delete') && alphaRemoveLastLetter()) { e.preventDefault(); return; }
+    if (alphaAddLetterFromKey(key)) { e.preventDefault(); return; }
+  }
+
+  // Allophone
+  if (document.getElementById('screen-allophone').classList.contains('active')) {
+    if (key === 'Enter' && oMode === 'ecrire') { e.preventDefault(); alloCheck(); return; }
+
+    if (!editable && key === 'ArrowRight') { e.preventDefault(); alloNext(); return; }
+    if (!editable && key === 'ArrowLeft')  { e.preventDefault(); alloPrev(); return; }
+
+    if (!editable && alloPickQCMByDigit(key)) { e.preventDefault(); return; }
+
+    if (!editable && oMode === 'lettres') {
+      if ((key === 'Backspace' || key === 'Delete') && alloRemoveLastLetter()) { e.preventDefault(); return; }
+      if (key === 'Enter' && oAnswered) { e.preventDefault(); alloNext(); return; }
+      if (alloAddLetterFromKey(key)) { e.preventDefault(); return; }
+    }
+
+    if (!editable && oMode === 'voir' && key === 'Enter') {
+      e.preventDefault();
+      alloNext();
+      return;
+    }
+  }
+});
+</script>
+</body>
+</html>
+
+

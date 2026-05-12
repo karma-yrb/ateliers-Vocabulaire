@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Routeur Wi-Fi">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#77a6da"/>
+      <stop offset="100%" stop-color="#3a6ea5"/>
+    </linearGradient>
+  </defs>
+  <rect x="38" y="112" width="180" height="84" rx="20" fill="url(#g)"/>
+  <rect x="56" y="130" width="60" height="10" rx="5" fill="#dbe8f5"/>
+  <circle cx="142" cy="136" r="6" fill="#dbe8f5"/>
+  <circle cx="164" cy="136" r="6" fill="#dbe8f5"/>
+  <circle cx="186" cy="136" r="6" fill="#dbe8f5"/>
+  <rect x="64" y="84" width="8" height="34" rx="4" fill="#2f5a86"/>
+  <rect x="184" y="84" width="8" height="34" rx="4" fill="#2f5a86"/>
+  <path d="M88 80c20-20 60-20 80 0" fill="none" stroke="#2f5a86" stroke-width="8" stroke-linecap="round"/>
+  <path d="M102 66c14-14 38-14 52 0" fill="none" stroke="#2f5a86" stroke-width="8" stroke-linecap="round"/>
+  <path d="M116 52c7-7 17-7 24 0" fill="none" stroke="#2f5a86" stroke-width="8" stroke-linecap="round"/>
+</svg>

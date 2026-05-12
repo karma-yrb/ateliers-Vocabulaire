@@ -1,0 +1,528 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atelier vocabulaire quotidien</title>
+  <style>
+    :root {
+      --bg: #f7f3ee;
+      --panel: #fffdf9;
+      --ink: #20262e;
+      --muted: #596271;
+      --accent: #0e7490;
+      --accent-2: #1d4ed8;
+      --ok: #15803d;
+      --ko: #b91c1c;
+      --line: #e8e1d6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, #fff3df 0, transparent 28%),
+        radial-gradient(circle at 90% 10%, #d7edf6 0, transparent 30%),
+        var(--bg);
+      font-family: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+    }
+
+    .wrap {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 16px;
+      min-height: 100vh;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(20, 20, 20, 0.06);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .stats {
+      margin-top: 16px;
+      display: grid;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .timer {
+      margin-top: 14px;
+      font-weight: 700;
+      font-size: 1.35rem;
+      text-align: center;
+      letter-spacing: 0.02em;
+      color: var(--accent-2);
+      border: 1px dashed #9dc4d4;
+      border-radius: 12px;
+      padding: 10px;
+      background: #f0f9ff;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      transition: transform .08s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button.secondary { background: #334155; }
+    button.light { background: #e5edf5; color: #1f2937; }
+
+    .exercise {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .card {
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 18px;
+      min-height: 340px;
+      display: grid;
+      align-content: center;
+      gap: 10px;
+    }
+
+    .emoji {
+      font-size: clamp(70px, 12vw, 120px);
+      line-height: 1;
+    }
+
+    .target {
+      font-size: clamp(36px, 8vw, 54px);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin: 4px 0;
+      text-transform: lowercase;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 2px solid #c9d6e3;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 1.2rem;
+      outline: none;
+      background: #fff;
+    }
+
+    input[type="text"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
+
+    .feedback {
+      min-height: 26px;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 4px 0;
+    }
+
+    .ok { color: var(--ok); }
+    .ko { color: var(--ko); }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .progress {
+      height: 14px;
+      border-radius: 999px;
+      background: #e9eef4;
+      overflow: hidden;
+      border: 1px solid #d2dee9;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #0ea5e9, #2563eb);
+      transition: width .2s ease;
+    }
+
+    .word-list {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+    }
+
+    .word-chip {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 6px;
+      text-align: center;
+      font-size: 0.93rem;
+    }
+
+    @media (max-width: 850px) {
+      .wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <aside class="panel">
+      <h1>Vocabulaire quotidien</h1>
+      <p class="hint">Objectif: cliquer, lire et recopier des mots simples pendant 60 minutes.</p>
+
+      <div class="timer" id="timer">60:00</div>
+
+      <div class="stats">
+        <div class="stat"><span>Progression</span><strong id="progressLabel">0 / 72</strong></div>
+        <div class="stat"><span>Reussites</span><strong id="scoreLabel">0</strong></div>
+        <div class="stat"><span>Tentatives</span><strong id="attemptLabel">0</strong></div>
+      </div>
+
+      <div class="actions">
+        <button id="startBtn">Demarrer la session 1h</button>
+        <button id="pauseBtn" class="secondary">Pause / Reprendre</button>
+        <button id="newBtn" class="light">Nouvelle serie</button>
+      </div>
+
+      <p class="hint" style="margin-top:12px;">
+        Conseil formatrice: laisser l'apprenante utiliser la souris pour cliquer dans la zone, puis le clavier pour recopier le mot.
+      </p>
+    </aside>
+
+    <main class="panel exercise">
+      <div class="card">
+        <div class="emoji" id="emoji">🍎</div>
+        <div class="target" id="targetWord">pomme</div>
+      </div>
+
+      <div>
+        <label for="inputWord">Recopie le mot:</label>
+        <input id="inputWord" type="text" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div class="toolbar">
+        <button id="checkBtn">Valider</button>
+        <button id="nextBtn" class="secondary">Mot suivant</button>
+        <button id="clearBtn" class="light">Effacer</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div>
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+      </div>
+
+      <section>
+        <p class="hint" style="margin:6px 0 8px;">Mots de la serie (pour travailler la lecture):</p>
+        <div id="wordList" class="word-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const wordBank = [
+      { word: "pomme", emoji: "🍎" },
+      { word: "pain", emoji: "🍞" },
+      { word: "eau", emoji: "💧" },
+      { word: "lait", emoji: "🥛" },
+      { word: "riz", emoji: "🍚" },
+      { word: "tasse", emoji: "☕" },
+      { word: "assiette", emoji: "🍽️" },
+      { word: "cuillere", emoji: "🥄" },
+      { word: "table", emoji: "🪑" },
+      { word: "chaise", emoji: "🪑" },
+      { word: "porte", emoji: "🚪" },
+      { word: "fenetre", emoji: "🪟" },
+      { word: "lit", emoji: "🛏️" },
+      { word: "lampe", emoji: "💡" },
+      { word: "cle", emoji: "🔑" },
+      { word: "sac", emoji: "👜" },
+      { word: "stylo", emoji: "🖊️" },
+      { word: "livre", emoji: "📕" },
+      { word: "ecole", emoji: "🏫" },
+      { word: "maison", emoji: "🏠" },
+      { word: "rue", emoji: "🛣️" },
+      { word: "bus", emoji: "🚌" },
+      { word: "velo", emoji: "🚲" },
+      { word: "voiture", emoji: "🚗" },
+      { word: "main", emoji: "✋" },
+      { word: "oeil", emoji: "👁️" },
+      { word: "nez", emoji: "👃" },
+      { word: "bouche", emoji: "👄" },
+      { word: "maman", emoji: "👩" },
+      { word: "papa", emoji: "👨" },
+      { word: "ami", emoji: "🧑" },
+      { word: "chat", emoji: "🐱" },
+      { word: "chien", emoji: "🐶" },
+      { word: "soleil", emoji: "☀️" },
+      { word: "pluie", emoji: "🌧️" },
+      { word: "fleur", emoji: "🌸" }
+    ];
+
+    const repetitions = 2;
+    const totalMinutes = 60;
+
+    const emojiEl = document.getElementById("emoji");
+    const targetEl = document.getElementById("targetWord");
+    const inputEl = document.getElementById("inputWord");
+    const feedbackEl = document.getElementById("feedback");
+
+    const progressLabelEl = document.getElementById("progressLabel");
+    const scoreLabelEl = document.getElementById("scoreLabel");
+    const attemptLabelEl = document.getElementById("attemptLabel");
+    const progressBarEl = document.getElementById("progressBar");
+    const timerEl = document.getElementById("timer");
+    const wordListEl = document.getElementById("wordList");
+
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const newBtn = document.getElementById("newBtn");
+    const checkBtn = document.getElementById("checkBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    let deck = [];
+    let index = 0;
+    let score = 0;
+    let attempts = 0;
+    let running = false;
+    let paused = false;
+    let remainingSeconds = totalMinutes * 60;
+    let timerId = null;
+
+    function normalize(text) {
+      return (text || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function buildDeck() {
+      let result = [];
+      for (let i = 0; i < repetitions; i += 1) {
+        result = result.concat(shuffle(wordBank));
+      }
+      deck = result;
+      index = 0;
+      score = 0;
+      attempts = 0;
+      feedbackEl.textContent = "";
+      feedbackEl.className = "feedback";
+      renderWordList();
+      updateUI();
+    }
+
+    function renderWordList() {
+      wordListEl.innerHTML = "";
+      const uniqueWords = wordBank.map((w) => w.word);
+      uniqueWords.forEach((word) => {
+        const chip = document.createElement("div");
+        chip.className = "word-chip";
+        chip.textContent = word;
+        wordListEl.appendChild(chip);
+      });
+    }
+
+    function current() {
+      return deck[index] || deck[deck.length - 1] || wordBank[0];
+    }
+
+    function updateUI() {
+      const entry = current();
+      emojiEl.textContent = entry.emoji;
+      targetEl.textContent = entry.word;
+
+      progressLabelEl.textContent = `${Math.min(index + 1, deck.length)} / ${deck.length}`;
+      scoreLabelEl.textContent = String(score);
+      attemptLabelEl.textContent = String(attempts);
+      const pct = deck.length ? Math.min(index / deck.length, 1) * 100 : 0;
+      progressBarEl.style.width = `${pct}%`;
+
+      inputEl.focus();
+    }
+
+    function nextWord() {
+      if (index < deck.length - 1) {
+        index += 1;
+        inputEl.value = "";
+        feedbackEl.textContent = "";
+        feedbackEl.className = "feedback";
+        updateUI();
+        return;
+      }
+
+      running = false;
+      stopTimer();
+      feedbackEl.textContent = "Serie terminee. Clique sur 'Nouvelle serie' pour recommencer.";
+      feedbackEl.className = "feedback ok";
+    }
+
+    function validateWord() {
+      const expected = normalize(current().word);
+      const typed = normalize(inputEl.value);
+
+      if (!typed) {
+        feedbackEl.textContent = "Ecris le mot avant de valider.";
+        feedbackEl.className = "feedback ko";
+        inputEl.focus();
+        return;
+      }
+
+      attempts += 1;
+
+      if (typed === expected) {
+        score += 1;
+        feedbackEl.textContent = "Bravo, c'est correct.";
+        feedbackEl.className = "feedback ok";
+      } else {
+        feedbackEl.textContent = `Ce n'est pas encore ca. Mot attendu: ${current().word}`;
+        feedbackEl.className = "feedback ko";
+      }
+
+      scoreLabelEl.textContent = String(score);
+      attemptLabelEl.textContent = String(attempts);
+      setTimeout(nextWord, 650);
+    }
+
+    function formatTime(total) {
+      const m = Math.floor(total / 60).toString().padStart(2, "0");
+      const s = Math.floor(total % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function stopTimer() {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function startTimer() {
+      stopTimer();
+      timerId = setInterval(() => {
+        if (!running || paused) {
+          return;
+        }
+
+        if (remainingSeconds <= 0) {
+          running = false;
+          stopTimer();
+          feedbackEl.textContent = "Temps ecoule. Session terminee.";
+          feedbackEl.className = "feedback ok";
+          return;
+        }
+
+        remainingSeconds -= 1;
+        timerEl.textContent = formatTime(remainingSeconds);
+      }, 1000);
+    }
+
+    function startSession() {
+      running = true;
+      paused = false;
+      remainingSeconds = totalMinutes * 60;
+      timerEl.textContent = formatTime(remainingSeconds);
+      feedbackEl.textContent = "Session lancee. Recopie chaque mot.";
+      feedbackEl.className = "feedback";
+      buildDeck();
+      startTimer();
+    }
+
+    startBtn.addEventListener("click", startSession);
+
+    pauseBtn.addEventListener("click", () => {
+      if (!running) {
+        return;
+      }
+      paused = !paused;
+      feedbackEl.textContent = paused ? "Session en pause." : "Session reprise.";
+      feedbackEl.className = "feedback";
+    });
+
+    newBtn.addEventListener("click", () => {
+      startSession();
+      inputEl.value = "";
+      inputEl.focus();
+    });
+
+    checkBtn.addEventListener("click", validateWord);
+    nextBtn.addEventListener("click", nextWord);
+
+    clearBtn.addEventListener("click", () => {
+      inputEl.value = "";
+      inputEl.focus();
+    });
+
+    inputEl.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        validateWord();
+      }
+    });
+
+    buildDeck();
+    timerEl.textContent = formatTime(totalMinutes * 60);
+  </script>
+</body>
+</html>
