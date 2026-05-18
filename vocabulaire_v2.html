@@ -215,25 +215,35 @@
     /* Letter scramble shared */
     .char-boxes {
       display: flex;
-      gap: 9px;
+      gap: 9px 12px;
       flex-wrap: wrap;
       justify-content: center;
+      align-items: center;
       min-height: 58px;
     }
+    .word-group {
+      display: inline-flex;
+      gap: 9px;
+      flex-wrap: nowrap;
+      align-items: center;
+      white-space: nowrap;
+      --box-scale: 1;
+    }
     .char-box {
-      width: 52px;
-      height: 56px;
+      width: calc(52px * var(--box-scale, 1));
+      height: calc(56px * var(--box-scale, 1));
       border-radius: 10px;
       border: 2px solid var(--line);
       background: #f8f6f2;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: calc(1.5rem * var(--box-scale, 1));
       font-weight: 800;
       color: var(--ink);
       transition: all 0.13s;
       user-select: none;
+      flex: 0 0 auto;
     }
     .char-box.empty  { border-style: dashed; color: transparent; }
     .char-box.filled { cursor: pointer; border-color: currentColor; }
@@ -272,9 +282,9 @@
 
     /* Compact letters layout for long level-4 phrases */
     .allo-card.phrase-mode .char-box {
-      width: 34px;
-      height: 38px;
-      font-size: 1rem;
+      width: calc(34px * var(--box-scale, 1));
+      height: calc(38px * var(--box-scale, 1));
+      font-size: calc(1rem * var(--box-scale, 1));
       border-radius: 8px;
     }
     .allo-card.phrase-mode .letter-tile {
@@ -450,7 +460,8 @@
     }
 
     .alpha-view-word {
-      font-size: 2.6rem;
+      --fit-scale: 1;
+      font-size: calc(2.6rem * var(--fit-scale));
       font-weight: 800;
       color: var(--amber);
       padding: 16px 28px;
@@ -458,6 +469,13 @@
       border-radius: 14px;
       border: 2px solid var(--amber);
       letter-spacing: 0.05em;
+      text-align: center;
+      word-break: normal;
+      overflow-wrap: normal;
+      white-space: normal;
+      text-wrap: balance;
+      hyphens: none;
+      max-width: 100%;
     }
 
     .alpha-actions {
@@ -631,6 +649,7 @@
     }
     .allo-help-word {
       display: none;
+      --fit-scale: 1;
       text-align: center;
       padding: 12px 14px;
       border-radius: 12px;
@@ -638,9 +657,14 @@
       background: var(--teal-lt);
       color: var(--teal);
       font-weight: 800;
-      font-size: 1.15rem;
+      font-size: calc(1.15rem * var(--fit-scale));
       letter-spacing: 0.02em;
-      word-break: break-word;
+      word-break: normal;
+      overflow-wrap: normal;
+      white-space: normal;
+      text-wrap: balance;
+      hyphens: none;
+      max-width: 100%;
     }
     .allo-help-word.show { display: block; }
 
@@ -829,6 +853,12 @@
       text-align: center;
       color: var(--ink);
       transition: all 0.13s;
+      word-break: normal;
+      overflow-wrap: normal;
+      white-space: normal;
+      text-wrap: balance;
+      hyphens: none;
+      line-height: 1.25;
     }
     .qcm-opt:hover { border-color: var(--teal); background: var(--teal-lt); color: var(--teal); }
     .qcm-opt.correct { border-color: var(--ok); background: var(--ok-lt); color: var(--ok); pointer-events: none; }
@@ -1496,6 +1526,72 @@ function renderWordVisual(el, wordObj, imageClass) {
   img.src = src;
 }
 
+function longestWordLength(text) {
+  return String(text || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .reduce((max, word) => Math.max(max, [...word].length), 0);
+}
+
+function textFitScale(text) {
+  const longest = longestWordLength(text);
+  if (longest <= 8) return 1;
+  if (longest <= 10) return 0.92;
+  if (longest <= 12) return 0.84;
+  if (longest <= 14) return 0.76;
+  if (longest <= 16) return 0.68;
+  return 0.62;
+}
+
+function applyAdaptiveText(el, text) {
+  if (!el) return;
+  el.textContent = text;
+  el.style.setProperty('--fit-scale', textFitScale(text));
+}
+
+function boxScaleForText(text) {
+  const longest = longestWordLength(text);
+  if (longest <= 8) return 1;
+  if (longest <= 10) return 0.92;
+  if (longest <= 12) return 0.84;
+  if (longest <= 14) return 0.76;
+  return 0.68;
+}
+
+function renderGroupedCharBoxes(container, charList, onRemove) {
+  container.innerHTML = '';
+  let group = [];
+
+  const flushGroup = () => {
+    if (!group.length) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'word-group';
+    wrap.style.setProperty('--box-scale', boxScaleForText(group.map(item => item.ch).join('')));
+
+    group.forEach(item => {
+      const box = document.createElement('div');
+      box.className = 'char-box ' + (item.ch ? 'filled' : 'empty');
+      box.textContent = item.ch ? item.ch : '  ';
+      if (item.ch) box.onclick = () => onRemove(item.index);
+      wrap.appendChild(box);
+    });
+
+    container.appendChild(wrap);
+    group = [];
+  };
+
+  charList.forEach(item => {
+    if (item.ch === ' ') {
+      flushGroup();
+      return;
+    }
+    group.push(item);
+  });
+
+  flushGroup();
+}
+
 /* ─── Navigation ───────────────────────────────────────────── */
 
 function goHome() {
@@ -1570,7 +1666,7 @@ function alphaLoad() {
   if (aMode === 'scramble') {
     alphaSetupScramble(w);
   } else {
-    document.getElementById('alpha-view-word').textContent = w.word;
+    applyAdaptiveText(document.getElementById('alpha-view-word'), w.word);
   }
 
   document.getElementById('alpha-feedback').textContent = '';
@@ -1588,19 +1684,8 @@ function alphaSetupScramble(w) {
 
 function renderAChars() {
   const c = document.getElementById('alpha-char-boxes');
-  c.innerHTML = '';
-  aTyped.forEach((ch, i) => {
-    const box = document.createElement('div');
-    if (ch === ' ') {
-      box.className = 'char-box space';
-      box.textContent = ' ';
-    } else {
-      box.className = 'char-box ' + (ch ? 'filled' : 'empty');
-      box.textContent = ch ? ch : '  ';
-      if (ch) box.onclick = () => aRemoveChar(i);
-    }
-    c.appendChild(box);
-  });
+  const chars = aTyped.map((ch, i) => ({ ch, index: i }));
+  renderGroupedCharBoxes(c, chars, aRemoveChar);
 }
 
 function renderALetters() {
@@ -1975,19 +2060,8 @@ function alloSetupLettres(w) {
 
 function renderOChars() {
   const c = document.getElementById('allo-char-boxes');
-  c.innerHTML = '';
-  oTyped.forEach((ch, i) => {
-    const box = document.createElement('div');
-    if (ch === ' ') {
-      box.className = 'char-box space';
-      box.textContent = ' ';
-    } else {
-      box.className = 'char-box ' + (ch ? 'filled' : 'empty');
-      box.textContent = ch ? ch : '  ';
-      if (ch) box.onclick = () => oRemoveChar(i);
-    }
-    c.appendChild(box);
-  });
+  const chars = oTyped.map((ch, i) => ({ ch, index: i }));
+  renderGroupedCharBoxes(c, chars, oRemoveChar);
 }
 
 function renderOLetters() {
@@ -2129,7 +2203,7 @@ function renderAlloHelp() {
   const help = document.getElementById('allo-help-word');
   if (!btn || !help) return;
   const w = oDeck[oIdx];
-  help.textContent = w ? w.word : '-';
+  applyAdaptiveText(help, w ? w.word : '-');
   help.classList.toggle('show', oHelpVisible);
   btn.classList.toggle('active', oHelpVisible);
   const meta = btn.querySelector('.allo-help-meta');
