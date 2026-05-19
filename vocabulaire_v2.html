@@ -219,11 +219,19 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
+      width: 100%;
       min-height: 58px;
     }
     .word-group {
       display: inline-flex;
-      gap: 9px;
+      gap: calc(9px * var(--box-scale, 1));
+      flex-wrap: nowrap;
+      align-items: center;
+      white-space: nowrap;
+      --box-scale: 1;
+    }
+    .word-space {
+      display: inline-flex;
       flex-wrap: nowrap;
       align-items: center;
       white-space: nowrap;
@@ -248,11 +256,21 @@
     .char-box.empty  { border-style: dashed; color: transparent; }
     .char-box.filled { cursor: pointer; border-color: currentColor; }
     .char-box.space {
-      border-style: solid;
-      border-color: transparent;
+      border-style: dashed;
+      border-color: var(--line);
       background: transparent;
-      box-shadow: inset 0 -2px 0 var(--line);
+      box-shadow: none;
       cursor: default;
+      color: transparent;
+      position: relative;
+    }
+    .char-box.space::before {
+      content: "";
+      width: calc(26px * var(--box-scale, 1));
+      height: calc(6px * var(--box-scale, 1));
+      border-radius: 999px;
+      background: #9aa4b2;
+      display: block;
     }
 
     .letter-bank {
@@ -260,6 +278,7 @@
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
+      width: 100%;
     }
     .letter-tile {
       width: 52px;
@@ -1550,24 +1569,49 @@ function applyAdaptiveText(el, text) {
   el.style.setProperty('--fit-scale', textFitScale(text));
 }
 
-function boxScaleForText(text) {
-  const longest = longestWordLength(text);
-  if (longest <= 8) return 1;
-  if (longest <= 10) return 0.92;
-  if (longest <= 12) return 0.84;
-  if (longest <= 14) return 0.76;
-  return 0.68;
+function layoutLetterBank(container, letterCount) {
+  if (!container) return;
+
+  container.style.removeProperty('grid-template-columns');
+  container.style.removeProperty('display');
+  container.style.removeProperty('justify-content');
+
+  if (letterCount <= 8) return;
+
+  const cols = Math.ceil(letterCount / 2);
+  container.style.display = 'grid';
+  container.style.gridTemplateColumns = `repeat(${cols}, 52px)`;
+  container.style.justifyContent = 'center';
+}
+
+function boxScaleForWord(word, container) {
+  const chars = [...String(word || '')].length;
+  if (chars <= 1) return 1;
+
+  const phraseMode = !!(container && container.closest('.phrase-mode'));
+  const baseBox = phraseMode ? 34 : 52;
+  const baseGap = 9;
+  const baseWidth = chars * baseBox + Math.max(0, chars - 1) * baseGap;
+  const available = Math.max(180, (container ? container.clientWidth : 0) - 8);
+
+  const fit = Math.min(1, available / Math.max(1, baseWidth));
+  return Math.max(0.52, fit);
 }
 
 function renderGroupedCharBoxes(container, charList, onRemove) {
   container.innerHTML = '';
+  const hasSpace = charList.some(item => (item.ref ?? item.ch) === ' ');
+  container.style.flexWrap = hasSpace ? 'wrap' : 'nowrap';
   let group = [];
+  let lastScale = 1;
 
   const flushGroup = () => {
     if (!group.length) return;
     const wrap = document.createElement('div');
     wrap.className = 'word-group';
-    wrap.style.setProperty('--box-scale', boxScaleForText(group.map(item => item.ch).join('')));
+    const word = group.map(item => (item.ref ?? item.ch)).join('');
+    lastScale = boxScaleForWord(word, container);
+    wrap.style.setProperty('--box-scale', lastScale);
 
     group.forEach(item => {
       const box = document.createElement('div');
@@ -1578,12 +1622,35 @@ function renderGroupedCharBoxes(container, charList, onRemove) {
     });
 
     container.appendChild(wrap);
+
+    const cRect = container.getBoundingClientRect();
+    const wRect = wrap.getBoundingClientRect();
+    if (wRect.width > cRect.width && cRect.width > 0) {
+      const current = parseFloat(wrap.style.getPropertyValue('--box-scale')) || 1;
+      const fit = (cRect.width - 4) / wRect.width;
+      lastScale = Math.max(0.35, current * fit);
+      wrap.style.setProperty('--box-scale', lastScale);
+    }
+
     group = [];
   };
 
+  const addSpaceSlot = () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'word-space';
+    wrap.style.setProperty('--box-scale', lastScale);
+
+    const box = document.createElement('div');
+    box.className = 'char-box space';
+    box.setAttribute('aria-label', 'espace');
+    wrap.appendChild(box);
+    container.appendChild(wrap);
+  };
+
   charList.forEach(item => {
-    if (item.ch === ' ') {
+    if ((item.ref ?? item.ch) === ' ') {
       flushGroup();
+      addSpaceSlot();
       return;
     }
     group.push(item);
@@ -1684,13 +1751,14 @@ function alphaSetupScramble(w) {
 
 function renderAChars() {
   const c = document.getElementById('alpha-char-boxes');
-  const chars = aTyped.map((ch, i) => ({ ch, index: i }));
+  const chars = aTyped.map((ch, i) => ({ ch, ref: aTarget[i], index: i }));
   renderGroupedCharBoxes(c, chars, aRemoveChar);
 }
 
 function renderALetters() {
   const c = document.getElementById('alpha-letter-bank');
   c.innerHTML = '';
+  layoutLetterBank(c, aPool.length);
   aPool.forEach(item => {
     const btn = document.createElement('button');
     btn.className = 'letter-tile' + (item.used ? ' used' : '');
@@ -2060,13 +2128,14 @@ function alloSetupLettres(w) {
 
 function renderOChars() {
   const c = document.getElementById('allo-char-boxes');
-  const chars = oTyped.map((ch, i) => ({ ch, index: i }));
+  const chars = oTyped.map((ch, i) => ({ ch, ref: oTarget[i], index: i }));
   renderGroupedCharBoxes(c, chars, oRemoveChar);
 }
 
 function renderOLetters() {
   const c = document.getElementById('allo-letter-bank');
   c.innerHTML = '';
+  layoutLetterBank(c, oPool.length);
   oPool.forEach(item => {
     const btn = document.createElement('button');
     btn.className = 'letter-tile' + (item.used ? ' used' : '');
