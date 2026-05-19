@@ -23,7 +23,7 @@ module.exports = {
       type: "json",
     },
     {
-      filename: "vocabulaire_v2.html",
+      filename: "index.html",
       updater: htmlVersionUpdater,
     },
   ],
