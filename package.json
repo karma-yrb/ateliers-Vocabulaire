@@ -1,0 +1,15 @@
+{
+  "name": "pimms-ateliers-vocabulaire",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Workflow release for PIMMS ateliers vocabulaire",
+  "scripts": {
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major"
+  },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  }
+}

@@ -280,6 +280,19 @@
       justify-content: center;
       width: 100%;
     }
+    .letter-bank.rows {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .letter-bank-row {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      justify-content: center;
+      width: 100%;
+    }
     .letter-tile {
       width: 52px;
       height: 52px;
@@ -944,6 +957,26 @@
       font-weight: 500;
     }
 
+    .app-footer {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      z-index: 30;
+    }
+    .app-footer .version-value {
+      color: var(--ink);
+      margin-left: 4px;
+    }
+
     /* ─── RESPONSIVE ────────────────────────────────────────── */
     @media (max-width: 700px) {
       #screen-allophone.active {
@@ -1262,6 +1295,8 @@
 
 </div>
 
+<footer class="app-footer">Version <span id="app-version" class="version-value" data-app-version="1.0.0">1.0.0</span></footer>
+
 
 <!-- ═══════════════════════════════════════════════════════════
      SCRIPT
@@ -1569,19 +1604,58 @@ function applyAdaptiveText(el, text) {
   el.style.setProperty('--fit-scale', textFitScale(text));
 }
 
-function layoutLetterBank(container, letterCount) {
+function layoutLetterBank(container, letterCount, allowMultiRows = false) {
   if (!container) return;
 
+  container.classList.remove('rows');
   container.style.removeProperty('grid-template-columns');
   container.style.removeProperty('display');
   container.style.removeProperty('justify-content');
 
   if (letterCount <= 8) return;
 
-  const cols = Math.ceil(letterCount / 2);
+  const cols = allowMultiRows
+    ? Math.min(8, letterCount)
+    : Math.ceil(letterCount / 2);
   container.style.display = 'grid';
   container.style.gridTemplateColumns = `repeat(${cols}, 52px)`;
   container.style.justifyContent = 'center';
+}
+
+function buildLetterTile(item, onClick) {
+  const btn = document.createElement('button');
+  btn.className = 'letter-tile' + (item.used ? ' used' : '');
+  btn.textContent = item.l;
+  btn.onclick = () => onClick(item);
+  return btn;
+}
+
+function renderBalancedLetterRows(container, pool, onClick, maxPerRow = 8) {
+  const count = pool.length;
+  if (!count) return;
+
+  const rows = Math.max(2, Math.ceil(count / Math.max(1, maxPerRow)));
+  const base = Math.floor(count / rows);
+  const extra = count % rows;
+
+  container.classList.add('rows');
+  container.style.removeProperty('grid-template-columns');
+  container.style.removeProperty('justify-content');
+  container.style.display = 'flex';
+
+  let offset = 0;
+  for (let r = 0; r < rows; r++) {
+    const rowSize = base + (r < extra ? 1 : 0);
+    const row = document.createElement('div');
+    row.className = 'letter-bank-row';
+
+    for (let i = 0; i < rowSize; i++) {
+      row.appendChild(buildLetterTile(pool[offset + i], onClick));
+    }
+
+    container.appendChild(row);
+    offset += rowSize;
+  }
 }
 
 function boxScaleForWord(word, container) {
@@ -1760,11 +1834,7 @@ function renderALetters() {
   c.innerHTML = '';
   layoutLetterBank(c, aPool.length);
   aPool.forEach(item => {
-    const btn = document.createElement('button');
-    btn.className = 'letter-tile' + (item.used ? ' used' : '');
-    btn.textContent = item.l;
-    btn.onclick = () => aAddLetter(item);
-    c.appendChild(btn);
+    c.appendChild(buildLetterTile(item, aAddLetter));
   });
 }
 
@@ -2135,13 +2205,13 @@ function renderOChars() {
 function renderOLetters() {
   const c = document.getElementById('allo-letter-bank');
   c.innerHTML = '';
-  layoutLetterBank(c, oPool.length);
+  if (oPack === 'n4' && oPool.length > 8) {
+    renderBalancedLetterRows(c, oPool, oAddLetter, 8);
+    return;
+  }
+  layoutLetterBank(c, oPool.length, oPack === 'n4');
   oPool.forEach(item => {
-    const btn = document.createElement('button');
-    btn.className = 'letter-tile' + (item.used ? ' used' : '');
-    btn.textContent = item.l;
-    btn.onclick = () => oAddLetter(item);
-    c.appendChild(btn);
+    c.appendChild(buildLetterTile(item, oAddLetter));
   });
 }
 
