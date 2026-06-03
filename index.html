@@ -1093,6 +1093,9 @@
     <div class="alpha-topbar">
       <button class="back-btn" onclick="goHome()">← Retour</button>
       <span class="alpha-counter" id="alpha-counter">1 / 22</span>
+      <select id="alpha-cat-select" aria-label="Filtrer par catégorie" style="margin-left:auto;">
+        <option value="all">Toutes les catégories</option>
+      </select>
     </div>
 
     <!-- Progress bar -->
@@ -1308,7 +1311,7 @@
 
 const VOCAB_ALPHA = [
   // Corps
-  { emoji:"👁️", word:"œil",       cat:"Corps" },
+  { emoji:"👁️", word:"oeil",       cat:"Corps" },
   { emoji:"👃", word:"nez",        cat:"Corps" },
   { emoji:"👄", word:"bouche",     cat:"Corps" },
   { emoji:"👂", word:"oreille",    cat:"Corps" },
@@ -1322,7 +1325,7 @@ const VOCAB_ALPHA = [
   { emoji:"🥛", word:"lait",       cat:"Nourriture" },
   { emoji:"🍚", word:"riz",        cat:"Nourriture" },
   { emoji:"🍋", word:"citron",     cat:"Nourriture" },
-  { emoji:"🥚", word:"œuf",        cat:"Nourriture" },
+  { emoji:"🥚", word:"oeuf",        cat:"Nourriture" },
   { emoji:"🫙", word:"sel",        cat:"Nourriture" },
   // Maison
   { emoji:"🛏️", word:"lit",        cat:"Maison" },
@@ -1375,6 +1378,57 @@ const VOCAB_NUMERIQUE = [
   { emoji:"👤", word:"destinataire", cat:"Messagerie" },
 ];
 
+// Mots pour s'entraîner sur les accents (uniquement caractères accessibles via clavier)
+// Exclure les ligatures comme "œ" qui ne sont pas pratiques à taper
+const VOCAB_ACCENTS = [
+  { emoji:"🔤", word:"école",                cat:"Accents" },
+  { emoji:"🔤", word:"élève",                cat:"Accents" },
+  { emoji:"🔤", word:"hôtel",                cat:"Accents" },
+  { emoji:"🔤", word:"garçon",               cat:"Accents" },
+  { emoji:"🔤", word:"français",             cat:"Accents" },
+  { emoji:"🔤", word:"fenêtre",              cat:"Accents" },
+  { emoji:"🔤", word:"crème",                cat:"Accents" },
+  { emoji:"🔤", word:"été",                  cat:"Accents" },
+  { emoji:"🔤", word:"père",                 cat:"Accents" },
+  { emoji:"🔤", word:"île",                  cat:"Accents" },
+  { emoji:"🔤", word:"brûle",                cat:"Accents" },
+  { emoji:"🔤", word:"déjà",                 cat:"Accents" },
+  { emoji:"🔤", word:"à",                    cat:"Accents" },
+  { emoji:"🔤", word:"où",                   cat:"Accents" },
+  { emoji:"🔤", word:"maïs",                 cat:"Accents" },
+  { emoji:"🔤", word:"naïf",                 cat:"Accents" },
+  { emoji:"🔤", word:"voilà",                cat:"Accents" },
+  { emoji:"🔤", word:"bon appétit",          cat:"Accents" },
+  { emoji:"🔤", word:"peut-être",            cat:"Accents" },
+  { emoji:"🔤", word:"à bientôt",            cat:"Accents" },
+  { emoji:"🔤", word:"aujourd'hui",          cat:"Accents" },
+  { emoji:"🔤", word:"s'il vous plaît",      cat:"Accents" },
+  { emoji:"🔤", word:"c'est",                cat:"Accents" },
+  { emoji:"🔤", word:"(mot)",                 cat:"Accents" },
+  { emoji:"🔤", word:"100€",                 cat:"Accents" },
+  { emoji:"🔤", word:"prix: 10€",            cat:"Accents" },
+  { emoji:"🔤", word:"20h30",                cat:"Accents" },
+  { emoji:"🔤", word:"50%",                  cat:"Accents" },
+  { emoji:"🔤", word:"75%",                  cat:"Accents" },
+  { emoji:"🔤", word:"nom@mail.com",         cat:"Accents" },
+  { emoji:"🔤", word:"téléphone: 06-12-34-56-78", cat:"Accents" },
+  { emoji:"🔤", word:"prix: 100€!",          cat:"Accents" },
+  { emoji:"🔤", word:"Attention: danger!",   cat:"Accents" },
+  { emoji:"🔤", word:"Qui vient?",           cat:"Accents" },
+  { emoji:"🔤", word:"Où est-ce?",           cat:"Accents" },
+  { emoji:"🔤", word:"Hé! regarde",          cat:"Accents" },
+  { emoji:"🔤", word:"Salut!",               cat:"Accents" },
+  { emoji:"🔤", word:"Ça va?",               cat:"Accents" },
+  { emoji:"🔤", word:"j'ai",                 cat:"Accents" },
+  { emoji:"🔤", word:"l'enfant",             cat:"Accents" },
+  { emoji:"🔤", word:"d'accord",             cat:"Accents" },
+];
+
+// On peut intégrer ces mots au parcours alpha par défaut (ou choisir de les filtrer)
+// Pour faciliter la gestion, on concatène mais le filtre alpha utilisera la sélection.
+// NOTE: ne pas modifier VOCAB_ALPHA original, on utilisera VOCAB_ACCENTS lors du filtrage
+
+
 const VOCAB_ALLOPHONE = [
   // Fruits
   { emoji:"🍎", word:"une pomme",          cat:"Fruits" },
@@ -1415,7 +1469,7 @@ const VOCAB_ALLOPHONE = [
   { emoji:"🍽️", word:"une assiette",       cat:"Maison" },
   { emoji:"🥄", word:"une cuillère",       cat:"Maison" },
   // Corps
-  { emoji:"👁️", word:"un œil",             cat:"Corps" },
+  { emoji:"👁️", word:"un oeil",             cat:"Corps" },
   { emoji:"👂", word:"une oreille",        cat:"Corps" },
   { emoji:"👃", word:"un nez",             cat:"Corps" },
   { emoji:"🦷", word:"une dent",           cat:"Corps" },
@@ -1527,6 +1581,25 @@ function shuffle(arr) {
 function stripArticle(s) {
   return s.replace(/^(un|une|du|de la|des|le|la|les)\s+/i, '').toLowerCase().trim();
 }
+
+// Populate category selector for alpha (combines VOCAB_ALPHA and VOCAB_ACCENTS)
+function populateAlphaCategories() {
+  const sel = document.getElementById('alpha-cat-select');
+  if (!sel) return;
+  const cats = new Set();
+  [...VOCAB_ALPHA, ...VOCAB_ACCENTS].forEach(w => { if (w && w.cat) cats.add(w.cat); });
+  // keep default "all"
+  sel.innerHTML = '<option value="all">Toutes les catégories</option>';
+  Array.from(cats).sort().forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    sel.appendChild(opt);
+  });
+}
+
+// Call immediately so the selector is ready when opening alpha
+populateAlphaCategories();
 
 function normLoose(s) {
   return norm(s)
@@ -1777,7 +1850,20 @@ let aTarget    = [];   // target chars (spaces included)
 let aNextTimer = null; // pending auto-advance timer
 
 function alphaInit() {
-  aDeck    = shuffle(aSource);
+  // Build source list for alpha: include VOCAB_ACCENTS when using VOCAB_ALPHA
+  const sel = document.getElementById('alpha-cat-select');
+  const selVal = sel ? sel.value : 'all';
+
+  const baseList = (aSource === VOCAB_ALPHA) ? [...VOCAB_ALPHA, ...VOCAB_ACCENTS] : [...aSource];
+
+  let deckSource;
+  if (selVal === 'all') {
+    deckSource = baseList;
+  } else {
+    deckSource = baseList.filter(w => w.cat === selVal);
+  }
+
+  aDeck    = shuffle(deckSource);
   aIdx     = 0;
   aCorrect = 0;
   document.getElementById('alpha-completed').classList.remove('show');
